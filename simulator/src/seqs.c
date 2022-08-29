@@ -1,5 +1,4 @@
 #include "tree.h"
-#include "seqs.h"
 #include "utils.h"
 #include <assert.h>
 
@@ -17,7 +16,7 @@ void allocSeqs(pTreeNode p, int len) {
     allocSeqs(p->rlink, len);
 }
 
-void simChars(pTreeNode p, double brate, int k, int pos) {
+void simChars(pTreeNode p, double base, int k, int pos, int hetero) {
     /* simulate k state characters at pos(ition) */
     int i, astate;
     double c, x, dist, trProb[k];
@@ -32,8 +31,11 @@ void simChars(pTreeNode p, double brate, int k, int pos) {
     } else {
         // evolve from ancestral node to current node
         astate = p->alink->sequence[pos];
-        dist = p->brlen * brate * p->rate;
-                
+        if (hetero == YES)
+            dist = p->brl * base * p->rates[pos];
+        else
+            dist = p->brl * base * p->rates[0];
+
         // calculate transition probs based on ancestral state and distance
         for (i = 0; i < k; i++) {
             if (astate == i) {
@@ -52,10 +54,10 @@ void simChars(pTreeNode p, double brate, int k, int pos) {
     }
     
     if (p->llink != NULL) {
-        simChars(p->llink, brate, k, pos);
+        simChars(p->llink, base, k, pos, hetero);
     }
     if (p->rlink != NULL) {
-        simChars(p->rlink, brate, k, pos);
+        simChars(p->rlink, base, k, pos, hetero);
     }
 }
 
@@ -69,34 +71,32 @@ int isConstChar(pTreeNode* tips, int ntips, int pos) {
     return 1; // when constant
 }
 
-void simulateData(pPhyTree tree, int len) {
-    int i, k, n2st, n3st, n4st, n5st;
+void simulateData(pPhyTree tree, int len, int hetero) {
+    int k, l, n2st, n3st, n4st;
 
-    // assuming rooted tree
-    assert(tree->type == ROOTED && tree->root != NULL);
+    assert(len > 0);
     
     allocSeqs(tree->root, len);
     tree->nsites = len;
     
-    n2st = (int)(len * 0.4);
+    /* binary to 4-state characters with proportions of 0.5, 0.3, 0.2 */
+    n2st = (int)(len * 0.5);
     n3st = (int)(len * 0.3);
-    n4st = (int)(len * 0.2);
-    n5st = len - n2st - n3st;
+    n4st = len - n2st - n3st;
 
-    // simulate discrete characters given the tree */
-    for (i = 0; i < len; i++) {
-        if (i < n2st) {
+    /* simulate discrete characters given the tree */
+    for (l = 0; l < len; l++) {
+        if (l < n2st) {
             k = 2;
-        } else if (i < n2st+n3st) {
+        } else if (l < n2st+n3st) {
             k = 3;
-        } else if (i < len-n5st) {
-            k = 4;
         } else {
-            k = 5;
+            k = 4;
         }
-        // keep only variable characters at the tips
+        /* keep only variable characters at the tips */
         do {
-            simChars(tree->root, tree->baserate, k, i);
-        } while (isConstChar(tree->tips, tree->ntips, i));
+            simChars(tree->root, tree->rbase, k, l, hetero);
+        }
+        while (isConstChar(tree->tips, tree->ntips, l));
     }
 }

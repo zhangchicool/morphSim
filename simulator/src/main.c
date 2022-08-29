@@ -1,21 +1,25 @@
-/*
- gcc -o simr main.c rate.c tree.c utils.c seqs.c -lm
- ./simr -i bd.tre -o out.nex -g 0.8
- ./simr -i bd.tre -o out.nex -h 1.5 -l 200
-*/
-
-#include "main.h"
-#include <assert.h>
+#include "tree.h"
+#include "sample.h"
+#include "rate.h"
+#include "seqs.h"
+#include "utils.h"
+#include "output.h"
 #include <unistd.h>
+
+void helpMsg(void);
 
 int main (int argc, char *argv[]) {
     FILE   *input =NULL, *output =NULL;
-    pPhyTree evoTree;
-    int    c, numTrees, clockMod = STRICT, seqLen = -1;
-    double clockVar = 0.0;
-    
+    pPhyTree evoTree, fbdTree;
+    int    c, numTree;
+    double psi = 0.0;    // fossil sampling rate   default: no fossil
+    double rho = 1.0;    // extant sampling prob   default: complete
+    char   *ss = "info";
+    double clRate = 1.0, clVar = 0.0;
+    int    seqLen = -1, clHetero = NO;
+
     /* parse arguments */
-    while ((c = getopt(argc, argv, "i:o:g:h:n:l:")) != -1) {
+    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:")) != -1) {
         switch(c) {
             case 'i':  // input
                 input  = fopen(optarg, "r");
@@ -23,60 +27,73 @@ int main (int argc, char *argv[]) {
             case 'o':  // output
                 output = fopen(optarg, "w");
                 break;
-            case 'g':  // gamma
-                clockMod = IGR;
-                clockVar = atof(optarg);
+            case 'q':  // fossil sampling rate
+                psi = atof(optarg);
                 break;
-            case 'h':  // lognormal
-                clockMod = ILN;
-                clockVar = atof(optarg);
+            case 'p':  // extant sampling prob
+                rho = atof(optarg);
                 break;
-            case 'n':  // normal
-                clockMod = NORM;
-                clockVar = atof(optarg);
+            case 's':  // sampling strategy
+                ss = optarg;
+                break;
+            case 'c':  // base clock rate
+                clRate = atof(optarg);
+                break;
+            case 'v':  // clock variance
+                clVar = atof(optarg);
+                break;
+            case 'h':  // clock heterogeneity
+                clHetero = YES;
                 break;
             case 'l':  // morphological characters
                 seqLen = atoi(optarg);
                 break;
-            default:
-                exit(1);
         }
     }
-    
+
     if (input == NULL || output == NULL) {
         printf("Unable to open input/output file!\n");
-        printf("Usage: ./simr -i input.trees -o output.nex [-g <var>] [-n <var>] [-e] [-l <nchars>]\n");
+        helpMsg();
         exit(1);
     }
 
-    numTrees = 0;
+    // setSeed(-1);
+    printf("seed: %u\n", z_rndu);
+
+    numTree = 0;
 	while ((c = fgetc(input)) != EOF) {
         if (isspace(c))  continue;
         ungetc(c, input);
-
-        /* read in rooted tree */
-        evoTree = readTree(input, ROOTED);
+        
+        /* read in rooted bd tree */
+        evoTree = readTree(input);
         // writeTree(stdout, evoTree);
-
+        
+        /* sample fossils on tree */
+        if (strcmp(ss, "info") == 0) {
+            showTreeInfo(output, evoTree);
+            fbdTree = evoTree;
+        }
+        else
+            fbdTree = sampleFossilAndExtant(evoTree, psi, rho, ss);
+        
         /* simulate clock rates on tree */
-        setSeed();
-        simulateRates(evoTree, clockMod, clockVar);
+        if (seqLen > 0 && clHetero == YES)
+            simulateRates(fbdTree, seqLen, clRate, clVar);
+        else
+            simulateRates(fbdTree, 1, clRate, clVar);
         
-        if (seqLen > 0) {
-            /* simulate character data */
-            simulateData(evoTree, seqLen);
-
-            /* write MrBayes commands */
-            writeMBCmd_Data(output, evoTree);
-        }
-        else {
-            /* fixed tree, no data */
-            writeMBCmd_FixTree(output, evoTree);
-        }
+        /* simulate character data */
+        if (seqLen > 0)
+            simulateData(fbdTree, seqLen, clHetero);
         
-        /* free memory of tree */
+        /* write BEAST2 XML file */
+        writeBEAST2XML(output, fbdTree, rho, ss);
+        
+        /* free memory of trees */
         freeTree(evoTree);
-        numTrees++;
+        freeTree(fbdTree);
+        numTree++;
     }
     
     fclose(input);
@@ -85,85 +102,8 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-void writeMBCmd_FixTree(FILE *fp, pPhyTree tree) {
-    /* write specific nexus file */
-    int i;
-    
-    fprintf(fp, "#NEXUS\n");
-    fprintf(fp, "Begin data;\n");
-    fprintf(fp, "  dimensions ntax=%d nchar=1;\n", tree->ntips);
-    fprintf(fp, "  format datatype=standard gap=- missing=?;\n");
-    fprintf(fp, "matrix\n");
-    for (i = 0; i < tree->ntips; i++) {
-        fprintf(fp, "  %s\t?\n", tree->tips[i]->name);
-    }
-    fprintf(fp, ";\nEnd;\n");
-
-    fprintf(fp, "Begin trees;\n");
-    fprintf(fp, "  tree mytree[&B MixedBrlens]=[&R][&clockrate = %.10lf]", tree->baserate);
-    assert(tree->type == ROOTED);
-    writeRootedTreeRates(fp, tree->root, tree->root, tree->baserate);
-    fprintf(fp, ";\nEnd;\n");
-
-    fprintf(fp, "Begin mrbayes;\n");
-    for (i = 0; i < tree->ntips; i++) {
-        if (tree->tips[i]->age > 1e-8) {
-            fprintf(fp, "  calibrate %s=fixed(%.10lf);\n", tree->tips[i]->name, tree->tips[i]->age);
-        }
-    }
-    fprintf(fp, "  prset nodeagepr=calibrated;\n");
-    fprintf(fp, "  prset brlenspr=clock:uniform;\n");
-    fprintf(fp, "  prset topologypr=fixed(mytree);\n");
-    fprintf(fp, "  prset clockvarpr=mixed;\n");
-    fprintf(fp, "  mcmcp nrun=1 nchain=1 ngen=1000000 samplefr=100 printfr=1000000;\n");
-    fprintf(fp, "  propset nodesliderclock(v)$prob=0;\n");
-    fprintf(fp, "  propset treestretch(v)$prob=0;\n");
-    fprintf(fp, "  propset multiplier(mixedBrlens)$prob=0;\n");
-    fprintf(fp, "  propset rjMCMC_RCL$delta=1.2;\n");
-    fprintf(fp, "  startvals [tau=mytree] v=mytree mixedBrlens=mytree;\n");
-    fprintf(fp, "  mcmc;\n");
-    fprintf(fp, "  sump;\n");
-    fprintf(fp, "End;\n");
-}
-
-void writeMBCmd_Data(FILE *fp, pPhyTree tree) {
-    int i, j;
-    
-    fprintf(fp, "#NEXUS\n");
-    fprintf(fp, "Begin data;\n");
-    fprintf(fp, "  dimensions ntax=%d nchar=%d;\n", tree->ntips, tree->nsites);
-    fprintf(fp, "  format datatype=standard gap=- missing=?;\n");
-    fprintf(fp, "matrix\n");
-    for (i = 0; i < tree->ntips; i++) {
-        fprintf(fp, "  %s\t", tree->tips[i]->name);
-        for (j = 0; j < tree->nsites; j++)
-            fprintf(fp, "%d", tree->tips[i]->sequence[j]);
-        fprintf(fp, "\n");
-    }
-    fprintf(fp, ";\nEnd;\n");
-
-    fprintf(fp, "Begin trees;\n");
-    fprintf(fp, "  tree mytree[&B MixedBrlens]=[&R][&clockrate = %.10lf]", tree->baserate);
-    assert(tree->type == ROOTED);
-    writeRootedTreeRates(fp, tree->root, tree->root, tree->baserate);
-    fprintf(fp, ";\nEnd;\n");
-
-    fprintf(fp, "Begin mrbayes;\n");
-    fprintf(fp, "  lset coding=variable;\n");
-    for (i = 0; i < tree->ntips; i++) {
-        if (tree->tips[i]->age > 1e-8) {
-            fprintf(fp, "  calibrate %s=fixed(%.10lf);\n", tree->tips[i]->name, tree->tips[i]->age);
-        }
-    }
-    fprintf(fp, "  prset nodeagepr=calibrated;\n");
-    fprintf(fp, "  prset brlenspr=clock:uniform;\n");
-    fprintf(fp, "  prset treeagepr=gamma(1, 0.1);\n");
-    fprintf(fp, "  prset clockratepr=exp(1);\n");
-    fprintf(fp, "  prset clockvarpr=mixed;\n");
-    fprintf(fp, "  mcmcp nrun=1 nchain=1 ngen=10000000 samplefr=250 printfr=1000000;\n");
-    fprintf(fp, "  propset rjMCMC_RCL$delta=1.2;\n");
-    fprintf(fp, "  startvals tau=mytree v=mytree mixedBrlens=mytree;\n");
-    fprintf(fp, "  mcmc;\n");
-    fprintf(fp, "  sump;\n");
-    fprintf(fp, "End;\n");
+void helpMsg() {
+    printf("Compile: gcc -o fbdt *.c -lm\n");
+    printf("Usage: ./fbdt -i <input> -o <output> -q <psi> -p <rho> -s <strat>\n");
+    printf("              -c <rate> -v <var> -l <nchars> \n");
 }

@@ -1,11 +1,14 @@
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef utils_h
+#define utils_h
 
-void setSeed(void);
+static unsigned int z_rndu = 12345;
+
+void   setSeed(int);
 double rndu(void);
 double rndExp(double lambda);
 double rndNormal(double mu, double sigma);
 double rndLogNormal(double mu, double sigma);
 double rndGamma(double a, double b);
+double rndBeta(double p, double q);
 
-#endif
+#endif /* utils_h */

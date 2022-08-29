@@ -1,6 +1,6 @@
-#ifndef _SEQS_H_
-#define _SEQS_H_
+#ifndef seqs_h
+#define seqs_h
 
-void simulateData(pPhyTree tree, int len);
+void simulateData(pPhyTree tree, int len, int hetero);
 
 #endif

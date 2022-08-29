@@ -1,63 +1,52 @@
 #include "tree.h"
-#include "rate.h"
 #include "utils.h"
 #include <assert.h>
 
-void simulateRates(pPhyTree tree, int clock, double var) {
+void allocRates(pTreeNode p, int len) {
+    if (p == NULL) return;
+    
+    // allocate space for rates
+    p->rates = (double *)malloc(len * sizeof(double));
+    if (p->rates == NULL) {
+        printf("Failed to allocate rates.\n");
+        exit(1);
+    }
+
+    allocRates(p->llink, len);
+    allocRates(p->rlink, len);
+}
+
+void simulateRates(pPhyTree tree, int len, double base, double var) {
     /* simulate branch rates under the given clock model */
-    int  i, ntips;
+    int  i, l;
     pTreeNode p;
     double mu, sigma;
     
-    // assuming rooted tree
-    assert(tree->type == ROOTED);
-    
-    /* base clock rate */
-    tree->baserate = 1.0;
-    
+    assert(len > 0);
+
+    /* base clock rate and variance */
+    tree->rbase = base;
+    tree->rvar  = var;
+    allocRates(tree->root, len);
+
     /* generate branch rates */
-    ntips = tree->ntips;
-    for (i = 0; i < 2*ntips -2; i++) {
-        if (i < ntips)
+    for (i = 0; i < 2 * tree->ntips -2; i++) {
+        if (i < tree->ntips)
             p = tree->tips[i];
         else
-            p = tree->ints[i-ntips];
+            p = tree->ints[i - tree->ntips];
         
-        if (clock == IGR) {
-            p->rate = rndGamma(1.0/var, 1.0/var);
-        }
-        else if (clock == ILN) {
+        if (var > 0.0) {
+            /* independent lognormal clock */
             sigma = sqrt(log(var + 1.0));
             mu = - sigma * sigma / 2.0;
-            p->rate = rndLogNormal(mu, sigma);
-        }
-        else if (clock == NORM) {
-            sigma = sqrt(var);
-            do {
-                mu = rndNormal(1.0, sigma);
-            } while (mu <= 0.0);
-            p->rate = mu;
+            for (l = 0; l < len; l++)
+                p->rates[l] = rndLogNormal(mu, sigma);
         }
         else {
-            p->rate = 1.0; // strict clock
+            /* strict clock */
+            for (l = 0; l < len; l++)
+                p->rates[l] = 1.0;
         }
-        // printf("%s:%lf[%lf]\n", p->name, p->brl, p->rate);
     }
-}
-
-void writeRootedTreeRates(FILE *fp, pTreeNode p, pTreeNode root, double brate) {
-    /* newick tree with rates */
-    if (p == NULL) return;
-    if (p->llink != NULL)  // && p->rlink != NULL
-        fprintf(fp, "(");
-    else
-        fprintf(fp, "%s:%.10lf[&B MixedBrlens %.10lf]", p->name, p->brlen * brate, p->brlen * brate * p->rate);
-    writeRootedTreeRates(fp, p->llink, root, brate);
-    if (p->llink != NULL)  // && p->rlink != NULL
-        fprintf(fp, ",");
-    writeRootedTreeRates(fp, p->rlink, root, brate);
-    if (p == root)
-        fprintf(fp, ")");
-    else if (p->llink != NULL)
-        fprintf(fp, "):%.10lf[&B MixedBrlens %.10lf]", p->brlen * brate, p->brlen * brate * p->rate);
 }

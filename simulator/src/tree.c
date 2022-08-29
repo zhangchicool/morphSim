@@ -1,11 +1,32 @@
 #include "tree.h"
 
+/* get a non-space character from file */
 int getChar(FILE *fp) {
-    /* get a non-space char from file */
     int c;
-    do { c = fgetc(fp);
-    } while (isspace(c));
+    
+    do c = fgetc(fp);
+    while (isspace(c));
+    
     return c;
+}
+
+pPhyTree newTree () {
+    pPhyTree tree = (pPhyTree)malloc(sizeof(struct PhyTree));
+    if (tree == NULL) {
+        printf("Failed to initialize tree.\n");
+        exit(1);
+    }
+    
+    tree->root = NULL;
+    tree->tips = NULL;
+    tree->ints = NULL;
+    
+    tree->length = tree->height = 0.0;
+    tree->ntips  = tree->nsites = 0;
+    tree->rbase  = 1.0;
+    tree->rvar   = 0.0;
+
+    return tree;
 }
 
 pTreeNode newNode() {
@@ -14,11 +35,15 @@ pTreeNode newNode() {
 		printf("Failed to allocate tree node.\n");
         exit(1);
 	}
-	p->llink = p->rlink = p->alink = NULL;
-	p->brlen = p->age = 0.0;
-    p->rate = 1.0;
+    
+	p->brl = p->age = 0.0;
+    p->rates = NULL;
     p->sequence = NULL;
-	return p;
+
+    p->llink = p->rlink = p->alink = NULL;
+    p->marked = NO;
+
+    return p;
 }
 
 pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
@@ -48,9 +73,9 @@ pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
         c = getChar(fp);
         if (c == ':') {
             if (side == ANCES)
-                fscanf(fp, "%lf", &p->brlen);
+                fscanf(fp, "%lf", &p->brl);
             else
-                fscanf(fp, "%lf", &q->brlen);
+                fscanf(fp, "%lf", &q->brl);
         }
         else
             ungetc(c, fp);
@@ -63,9 +88,9 @@ pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
             }
             else if (c == ':') {
                 if (side == ANCES)
-                    fscanf(fp, "%lf", &p->brlen);
+                    fscanf(fp, "%lf", &p->brl);
                 else
-                    fscanf(fp, "%lf", &q->brlen);
+                    fscanf(fp, "%lf", &q->brl);
                 break;
             }
             q->name[i] = c;
@@ -77,9 +102,8 @@ pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
     /* ignore attributes for now */
     c = getChar(fp);
     if (c == '[') {
-        do {
-            c = fgetc(fp);
-        } while (c != ']' && c != EOF);
+        do c = fgetc(fp);
+        while (c != ']' && c != EOF);
     }
     else
         ungetc(c, fp);
@@ -148,53 +172,51 @@ void readUnrootedTree(FILE *fp, pTreeNode p) {
     }
 }
 
-void getNumTips(pPhyTree tree, pTreeNode p) {
-    /* get number of tips, for either rooted or unrooted tree */
+void setNumTips(pPhyTree tree, pTreeNode p) {
     if (p == NULL) return;
-    if (p->llink != NULL) {
-        getNumTips(tree, p->llink);
-    }
-    else
+    
+    setNumTips(tree, p->llink);
+    setNumTips(tree, p->rlink);
+
+    if (p->llink == NULL) {
         (tree->ntips)++;
-    if (p->rlink != NULL) {
-        getNumTips(tree, p->rlink);
     }
 }
 
-void getAllNodes(pPhyTree tree, pTreeNode p, int *i, int *j) {
+void fillAllNodes(pPhyTree tree, pTreeNode p, int *i, int *j) {
     if (p == NULL) return;
     
-    getAllNodes(tree, p->llink, i, j);
-    getAllNodes(tree, p->rlink, i, j);
+    fillAllNodes(tree, p->llink, i, j);
+    fillAllNodes(tree, p->rlink, i, j);
     
     if (p->llink == NULL) {  // tip
         tree->tips[(*j)++] = p;
     }
     else {  // internal node
         tree->ints[(*i)++] = p;
-        sprintf(p->name, "i%d", (*i) + tree->ntips);
     }
 }
 
-void getTreeLength(pPhyTree tree) {
-    int i;
+void updateNodeArray (pPhyTree tree) {
+    int i = 0, j = 0;
     
-    tree->length = 0.0;
-    for (i = 0; i < tree->ntips; i++)
-        tree->length += tree->tips[i]->brlen;
-    for (i = 0; i < tree->ntips -2; i++)
-        tree->length += tree->ints[i]->brlen;
+    tree->ntips = 0;  // reset
+    setNumTips(tree, tree->root);
+    
+    /* fill in tip and internal node array */
+    tree->tips = (pTreeNode *)realloc(tree->tips, tree->ntips * sizeof(pTreeNode));
+    tree->ints = (pTreeNode *)realloc(tree->ints, tree->ntips * sizeof(pTreeNode));
+    if (tree->tips == NULL || tree->ints == NULL) {
+        printf("Failed to allocate node array.\n");
+        exit(1);
+    }
+    fillAllNodes(tree, tree->root, &i, &j);
 }
 
-void getNodeAges(pPhyTree tree) {
+void setNodeAges(pPhyTree tree) {
     int i;
     double h;
     pTreeNode p;
-    
-    if (tree->type == UNROOT) {
-        printf("getNodeAges: not for unrooted tree.\n");
-        return;
-    }
     
     /* get tree height */
     tree->height = 0.0;
@@ -202,7 +224,7 @@ void getNodeAges(pPhyTree tree) {
         h = 0.0;
         p = tree->tips[i];
         while (p != tree->root) {
-            h += p->brlen;
+            h += p->brl;
             p = p->alink;
         }
         if (tree->height < h)
@@ -214,11 +236,11 @@ void getNodeAges(pPhyTree tree) {
         h = 0.0;
         p = tree->tips[i];
         while (p != tree->root) {
-            h += p->brlen;
+            h += p->brl;
             p = p->alink;
         }
         /* get tip time */
-        if (fabs(tree->height - h) < 1E-8)
+        if (fabs(tree->height - h) < 5E-7)
             tree->tips[i]->age = 0.0;
         else
             tree->tips[i]->age = tree->height - h;
@@ -227,7 +249,7 @@ void getNodeAges(pPhyTree tree) {
         h = 0.0;
         p = tree->ints[i];
         while (p != tree->root) {
-            h += p->brlen;
+            h += p->brl;
             p = p->alink;
         }
         /* get int time */
@@ -235,118 +257,94 @@ void getNodeAges(pPhyTree tree) {
     }
 }
 
-pPhyTree readTree(FILE *fp, int type) {
-    pPhyTree TREE = NULL;
-    int c,  i, j;
+pPhyTree readTree(FILE *fp) {
+    pPhyTree tree = NULL;
+    int c;
     
     /* the first character of a tree must be '(' */
-    do { c = fgetc(fp);
-    } while (c != '(' && c != EOF);
+    do c = fgetc(fp);
+    while (c != '(' && c != EOF);
     if (c == EOF) {
         printf("No tree found in file.\n");
         exit(1);
     }
     
     /* initialize the tree */
-    TREE = (pPhyTree)malloc(sizeof(struct PhyTree));
-    if (TREE == NULL) {
-        printf("Failed to initialize TREE.\n");
-        exit(1);
-    }
-    TREE->root = newNode();
+    tree = newTree();
+    tree->root = newNode();
     
     /* read tree from file */
-    if (type == ROOTED) {
-        TREE->type = ROOTED;
-        readRootedTree(fp, TREE->root);
-    }
-    else if (type == UNROOT) {
-        TREE->type = UNROOT;
-        readUnrootedTree(fp, TREE->root);
-        /* the first taxa is treated as root */
-        while (TREE->root->alink != NULL) {
-            TREE->root = TREE->root->alink;
-        }
-    }
+    readRootedTree(fp, tree->root);
+    
+    updateNodeArray(tree);
+    setNodeAges(tree);
+    
     c = getChar(fp);
     if (c != ';') {
         printf("Warning: expecting ';' at the end, got '%c' instead.\n", c);
     }
     
-    /* get other info, must call functions in order */
-    TREE->ntips = 0; // reset
-    getNumTips(TREE, TREE->root);
-    TREE->tips = (pTreeNode *)malloc(TREE->ntips * sizeof(pTreeNode));
-    TREE->ints = (pTreeNode *)malloc(TREE->ntips * sizeof(pTreeNode));
-    if (TREE->tips == NULL || TREE->ints == NULL) {
-        printf("Failed to allocate node array.\n");
-        exit(1);
-    }
-    i = j = 0;
-    getAllNodes(TREE, TREE->root, &i, &j);
-    getTreeLength(TREE);
-    if (type == ROOTED) {
-        getNodeAges(TREE);
-    }
-    
-    return TREE;
+    return tree;
 }
 
-void writeRootedTree(FILE *fp, pTreeNode p, pTreeNode root) {
+void writeRootedTree(FILE *fp, pTreeNode p) {
+    pTreeNode l, r;
+    
     if (p == NULL) return;
-    if (p->llink != NULL)  // && p->rlink != NULL
-        fprintf(fp, "(");
+    l = p->llink;
+    r = p->rlink;
+    if (l == NULL || r == NULL) return;
+    
+    fprintf(fp, "(");
+    if (l->llink == NULL)
+        fprintf(fp, "%s", l->name);
     else
-        fprintf(fp, "%s:%lf", p->name, p->brlen);
-    writeRootedTree(fp, p->llink, root);
-    if (p->llink != NULL)  // && p->rlink != NULL
-        fprintf(fp, ",");
-    writeRootedTree(fp, p->rlink, root);
-    if (p == root)
-        fprintf(fp, ")");
-    else if (p->llink != NULL)
-        fprintf(fp, "):%lf", p->brlen);
+        writeRootedTree(fp, l);
+    fprintf(fp, ":%.11lf,", l->brl);
+
+    if (r->llink == NULL)
+        fprintf(fp, "%s", r->name);
+    else
+        writeRootedTree(fp, r);
+    fprintf(fp, ":%.11lf)", r->brl);
 }
 
 void writeUnrootedTree(FILE *fp, pTreeNode p) {
-    pTreeNode q;
+    pTreeNode q, l, r;
     
     if (p == NULL) return;
     q = p->rlink;
-    if (q == NULL || q->llink == NULL || q->rlink == NULL) return;
-    fprintf(fp, "(%s:%lf,", p->name, q->brlen);
+    l = q->llink;
+    r = q->rlink;
+    if (q == NULL || l == NULL || r == NULL) return;
     
-    if (q->llink->llink == NULL)
-        fprintf(fp, "%s:%lf,", q->llink->name, q->llink->brlen);
-    else{
-        writeRootedTree(fp, q->llink, q->llink);
-        fprintf(fp, ":%lf,", q->llink->brlen);
-    }
+    fprintf(fp, "(%s:%lf,", p->name, q->brl);
     
-    if (q->rlink->rlink == NULL)
-        fprintf(fp, "%s:%lf)", q->rlink->name, q->rlink->brlen);
-    else{
-        writeRootedTree(fp, q->rlink, q->rlink);
-        fprintf(fp, ":%lf)", q->rlink->brlen);
-    }
+    if (l->llink == NULL)
+        fprintf(fp, "%s", l->name);
+    else
+        writeRootedTree(fp, l);
+    fprintf(fp, ":%lf,", l->brl);
+
+    if (r->llink == NULL)
+        fprintf(fp, "%s", r->name);
+    else
+        writeRootedTree(fp, r);
+    fprintf(fp, ":%lf)", r->brl);
 }
 
 void writeTree(FILE *fp, pPhyTree tree) {
     if (tree == NULL) return;
-    if (tree->type == ROOTED) {
-        writeRootedTree(fp, tree->root, tree->root);
-        fprintf(fp, ";\n");
-    }
-    else {  // tree->type == UNROOT
-        writeUnrootedTree(fp, tree->root);
-        fprintf(fp, ";\n");
-    }
+
+    writeRootedTree(fp, tree->root);
+    fprintf(fp, ";\n");
 }
 
 void freeT(pTreeNode p) {
 	if (p == NULL) return;
 	freeT(p->llink);
 	freeT(p->rlink);
+    free (p->rates);
     free (p->sequence);
 	free (p);
 }

@@ -1,12 +1,19 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef main_h
+#define main_h
 
-#include "tree.h"
-#include "rate.h"
-#include "utils.h"
-#include "seqs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
 
-void writeMBCmd_FixTree(FILE *fp, pPhyTree tree);
-void writeMBCmd_Data(FILE *fp, pPhyTree tree);
+#define YES 1
+#define NO  0
+
+#define UNROOT 0
+#define ROOTED 1
+#define LEFT   1
+#define RIGHT  2
+#define ANCES  3
 
 #endif
