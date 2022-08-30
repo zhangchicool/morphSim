@@ -17,9 +17,10 @@ int main (int argc, char *argv[]) {
     char   *ss = "info";
     double clRate = 1.0, clVar = 0.0;
     int    seqLen = -1, clHetero = NO;
+    double alpha = -1;   // negative value for Mk
 
     /* parse arguments */
-    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:")) != -1) {
+    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:a:")) != -1) {
         switch(c) {
             case 'i':  // input
                 input  = fopen(optarg, "r");
@@ -47,6 +48,9 @@ int main (int argc, char *argv[]) {
                 break;
             case 'l':  // morphological characters
                 seqLen = atoi(optarg);
+                break;
+            case 'a':  // symmetric Dirichlet alpha
+                alpha = atof(optarg);
                 break;
         }
     }
@@ -85,10 +89,11 @@ int main (int argc, char *argv[]) {
         
         /* simulate character data */
         if (seqLen > 0)
-            simulateData(fbdTree, seqLen, clHetero);
+            simulateData(fbdTree, seqLen, clHetero, alpha);
         
-        /* write BEAST2 XML file */
-        writeBEAST2XML(output, fbdTree, rho, ss);
+        /* write files */
+        writeMrBayesCmd(output, fbdTree);
+        // writeBEAST2XML(output, fbdTree, rho, ss);
         
         /* free memory of trees */
         freeTree(evoTree);
@@ -105,5 +110,5 @@ int main (int argc, char *argv[]) {
 void helpMsg() {
     printf("Compile: gcc -o fbdt *.c -lm\n");
     printf("Usage: ./fbdt -i <input> -o <output> -q <psi> -p <rho> -s <strat>\n");
-    printf("              -c <rate> -v <var> -l <nchars> \n");
+    printf("              -c <rate> [-h] -v <var> -l <nchars> -a <alpha>\n");
 }

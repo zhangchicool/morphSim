@@ -97,7 +97,7 @@ double rndGamma(double a, double b) {
 }
 
 double rndBeta(double p, double q) {
-    /* this generates a random beta(p,q) variate */
+    /* This generates a random beta(p,q) variate. */
    double g1, g2;
    g1 = rndGamma1(p);
    g2 = rndGamma1(q);

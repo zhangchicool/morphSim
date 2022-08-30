@@ -1,5 +1,77 @@
 #include "tree.h"
 
+/* NEXUS file for MrBayes: fixed tree, no sequence data */
+void writeMBCmd_fixT(FILE *fp, pPhyTree tree) {
+    int i;
+    
+    fprintf(fp, "#NEXUS\n");
+    fprintf(fp, "Begin data;\n");
+    fprintf(fp, "  dimensions ntax=%d nchar=1;\n", tree->ntips);
+    fprintf(fp, "  format datatype=standard gap=- missing=?;\n");
+    fprintf(fp, "matrix\n");
+    for (i = 0; i < tree->ntips; i++) {
+        fprintf(fp, "  %s\t?\n", tree->tips[i]->name);
+    }
+    fprintf(fp, ";\nEnd;\n");
+
+    fprintf(fp, "Begin trees;\n");
+    fprintf(fp, "  tree mytree=[&R][&clockrate = %lf]", tree->rbase);
+    writeRootedTree(fp, tree->root);
+    fprintf(fp, ";\nEnd;\n");
+    
+    /*
+    fprintf(fp, "Begin mrbayes;\n");
+    for (i = 0; i < tree->ntips; i++) {
+        if (tree->tips[i]->age > 1e-8) {
+            fprintf(fp, "  calibrate %s=fixed(%.10lf);\n", tree->tips[i]->name, tree->tips[i]->age);
+        }
+    }
+    fprintf(fp, "  prset nodeagepr=calibrated;\n");
+    fprintf(fp, "End;\n");
+    */
+}
+
+void writeMBCmd_data(FILE *fp, pPhyTree tree) {
+    int i, j;
+    
+    fprintf(fp, "#NEXUS\n");
+    fprintf(fp, "Begin data;\n");
+    fprintf(fp, "  dimensions ntax=%d nchar=%d;\n", tree->ntips, tree->nsites);
+    fprintf(fp, "  format datatype=standard gap=- missing=?;\n");
+    fprintf(fp, "matrix\n");
+    for (i = 0; i < tree->ntips; i++) {
+        fprintf(fp, "  %s\t", tree->tips[i]->name);
+        for (j = 0; j < tree->nsites; j++)
+            fprintf(fp, "%d", tree->tips[i]->sequence[j]);
+        fprintf(fp, "\n");
+    }
+    fprintf(fp, ";\nEnd;\n");
+    
+    fprintf(fp, "Begin trees;\n");
+    fprintf(fp, "  tree mytree=[&R][&clockrate = %lf]", tree->rbase);
+    writeRootedTree(fp, tree->root);
+    fprintf(fp, ";\nEnd;\n");
+    
+    /*
+    fprintf(fp, "Begin mrbayes;\n");
+    fprintf(fp, "  lset coding=variable;\n");
+    for (i = 0; i < tree->ntips; i++) {
+        if (tree->tips[i]->age > 1e-8) {
+            fprintf(fp, "  calibrate %s=fixed(%.10lf);\n", tree->tips[i]->name, tree->tips[i]->age);
+        }
+    }
+    fprintf(fp, "  prset nodeagepr=calibrated;\n");
+    fprintf(fp, "End;\n");
+    */
+}
+
+void writeMrBayesCmd(FILE* fp, pPhyTree tree) {
+    if (tree->nsites > 0)
+        writeMBCmd_data(fp, tree);
+    else
+        writeMBCmd_fixT(fp, tree);
+}
+
 /* XML file for BEAST2: fixed tree, no sequence data */
 void writeBEAST2XML_fixT(FILE* fp, pPhyTree tree, double rho, char *ss) {
     int i;
