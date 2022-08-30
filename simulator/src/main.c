@@ -75,7 +75,7 @@ int main (int argc, char *argv[]) {
         
         /* sample fossils on tree */
         if (strcmp(ss, "info") == 0) {
-            showTreeInfo(output, evoTree);
+            showTreeInfo(stdout, evoTree);
             fbdTree = evoTree;
         }
         else
@@ -97,7 +97,8 @@ int main (int argc, char *argv[]) {
         
         /* free memory of trees */
         freeTree(evoTree);
-        freeTree(fbdTree);
+        if (strcmp(ss, "info") != 0)
+            freeTree(fbdTree);
         numTree++;
     }
     

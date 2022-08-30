@@ -1,0 +1,12 @@
+Begin MrBayes;
+  execute data.nex;
+
+  lset coding=variable;
+
+  prset symdirihyperpr=exp(1);
+
+  mcmc nchain=1 ngen=5000000 samplefr=250 printfr=100000 diagnfr=500000;
+
+  sumt;
+  sump;
+End;

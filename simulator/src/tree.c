@@ -255,6 +255,13 @@ void setNodeAges(pPhyTree tree) {
         /* get int time */
         tree->ints[i]->age = tree->height - h;
     }
+    
+    /* get tree length */
+    tree->length = 0.0;
+    for (i = 0; i < tree->ntips; i++)
+        tree->length += tree->tips[i]->brl;
+    for (i = 0; i < tree->ntips -2; i++)
+        tree->length += tree->ints[i]->brl;
 }
 
 pPhyTree readTree(FILE *fp) {
