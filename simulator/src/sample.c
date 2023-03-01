@@ -7,6 +7,7 @@ pPhyTree extractFBDTree(pPhyTree fullTree);
 void showTreeInfo(FILE *fp, pPhyTree tree) {
     int i, n, m, k;
     
+    fprintf(fp, "TreeInfo ", n, m, k);
     fprintf(fp, "%lf\t", tree->height);
     fprintf(fp, "%lf\t", tree->length);
 
@@ -19,7 +20,7 @@ void showTreeInfo(FILE *fp, pPhyTree tree) {
         else
             k++;  // number of anc fossils
     }
-    fprintf(fp, "TreeInfo %d\t%d\t%d\n", n, m, k);
+    fprintf(fp, "%d\t%d\t%d\n", n, m, k);
 }
 
 /* sample fossils on tree with rate psi

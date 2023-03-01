@@ -11,7 +11,7 @@ void helpMsg(void);
 int main (int argc, char *argv[]) {
     FILE   *input =NULL, *output =NULL;
     pPhyTree evoTree, fbdTree;
-    int    c, numTree;
+    int    c;
     double psi = 0.0;    // fossil sampling rate   default: no fossil
     double rho = 1.0;    // extant sampling prob   default: complete
     char   *ss = "info";
