@@ -19,7 +19,7 @@ void showTreeInfo(FILE *fp, pPhyTree tree) {
         else
             k++;  // number of anc fossils
     }
-    fprintf(fp, "%d\t%d\t%d\n", n, m, k);
+    fprintf(fp, "TreeInfo %d\t%d\t%d\n", n, m, k);
 }
 
 /* sample fossils on tree with rate psi

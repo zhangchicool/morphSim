@@ -64,23 +64,21 @@ int main (int argc, char *argv[]) {
     // setSeed(-1);
     printf("seed: %u\n", z_rndu);
 
-    numTree = 0;
-	while ((c = fgetc(input)) != EOF) {
+    while ((c = fgetc(input)) != EOF) {
         if (isspace(c))  continue;
         ungetc(c, input);
-        
+
         /* read in rooted bd tree */
         evoTree = readTree(input);
         // writeTree(stdout, evoTree);
-        
+
         /* sample fossils on tree */
-        if (strcmp(ss, "info") == 0) {
-            showTreeInfo(stdout, evoTree);
+        if (strcmp(ss, "info") == 0)
             fbdTree = evoTree;
-        }
         else
             fbdTree = sampleFossilAndExtant(evoTree, psi, rho, ss);
-        
+        showTreeInfo(stdout, fbdTree);
+
         /* simulate clock rates on tree */
         if (seqLen > 0 && clHetero == YES)
             simulateRates(fbdTree, seqLen, clRate, clVar);
@@ -99,9 +97,8 @@ int main (int argc, char *argv[]) {
         freeTree(evoTree);
         if (strcmp(ss, "info") != 0)
             freeTree(fbdTree);
-        numTree++;
     }
-    
+
     fclose(input);
     fclose(output);
     
