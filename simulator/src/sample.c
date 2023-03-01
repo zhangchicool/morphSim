@@ -7,11 +7,11 @@ pPhyTree extractFBDTree(pPhyTree fullTree);
 void showTreeInfo(FILE *fp, pPhyTree tree) {
     int i, n, m, k;
     
-    fprintf(fp, "TreeInfo ", n, m, k);
+    fprintf(fp, "TreeInfo ");
     fprintf(fp, "%lf\t", tree->height);
     fprintf(fp, "%lf\t", tree->length);
 
-    m = n = k = 0;
+    n = m = k = 0;
     for (i = 0; i < tree->ntips; i++) {
         if (tree->tips[i]->age < 1E-8)
             n++;  // number of extant taxa
