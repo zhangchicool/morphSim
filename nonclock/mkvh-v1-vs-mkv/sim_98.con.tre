@@ -1,0 +1,74 @@
+#NEXUS
+[ID: 5043647738]
+begin taxa;
+	dimensions ntax=31;
+	taxlabels
+		t14
+		t10
+		t5
+		t21
+		t25
+		t26
+		t6
+		t29
+		t17
+		t19
+		t13
+		t1
+		t2
+		t24
+		t18
+		t3
+		t20
+		t27
+		t31
+		t23
+		t8
+		t9
+		t11
+		t7
+		t15
+		t30
+		t16
+		t22
+		t4
+		t12
+		t28
+		;
+end;
+begin trees;
+	translate
+		1	t14,
+		2	t10,
+		3	t5,
+		4	t21,
+		5	t25,
+		6	t26,
+		7	t6,
+		8	t29,
+		9	t17,
+		10	t19,
+		11	t13,
+		12	t1,
+		13	t2,
+		14	t24,
+		15	t18,
+		16	t3,
+		17	t20,
+		18	t27,
+		19	t31,
+		20	t23,
+		21	t8,
+		22	t9,
+		23	t11,
+		24	t7,
+		25	t15,
+		26	t30,
+		27	t16,
+		28	t22,
+		29	t4,
+		30	t12,
+		31	t28
+		;
+   tree con_50_majrule = [&U] (1[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:3.083055e-02[&length_mean=3.30582822e-02,length_median=3.08305500e-02,length_95%HPD={3.33930300e-03,6.67094000e-02}],(21[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.338414e-01[&length_mean=1.36680526e-01,length_median=1.33841400e-01,length_95%HPD={7.28748600e-02,2.01057000e-01}],(22[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:8.729341e-03[&length_mean=1.05691098e-02,length_median=8.72934100e-03,length_95%HPD={3.03740400e-07,2.57073800e-02}],(23[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.046982e-02[&length_mean=5.41827191e-02,length_median=5.04698200e-02,length_95%HPD={1.82750600e-03,1.09720000e-01}],((((24[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.322541e-02[&length_mean=4.50314361e-02,length_median=4.32254100e-02,length_95%HPD={1.68796500e-02,7.69176000e-02}],25[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:3.282478e-02[&length_mean=3.46188344e-02,length_median=3.28247800e-02,length_95%HPD={9.89601300e-03,6.19637700e-02}])[&prob=9.68668755e-01,prob_stddev=3.29961167e-03,prob_range={9.66335578e-01,9.71001933e-01},prob(percent)="97",prob+-sd="97+-0"]:3.046788e-02[&length_mean=3.27747708e-02,length_median=3.04678800e-02,length_95%HPD={2.42676800e-03,6.74703700e-02}],26[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.336512e-02[&length_mean=5.55172292e-02,length_median=5.33651200e-02,length_95%HPD={1.86159000e-02,9.68386000e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.534697e-01[&length_mean=1.56103159e-01,length_median=1.53469700e-01,length_95%HPD={8.90976100e-02,2.26315800e-01}],(28[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:8.362897e-02[&length_mean=8.58519617e-02,length_median=8.36289700e-02,length_95%HPD={3.92812100e-02,1.35328200e-01}],(29[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.426943e-02[&length_mean=4.62150322e-02,length_median=4.42694300e-02,length_95%HPD={1.31697600e-02,8.40179400e-02}],30[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.324297e-01[&length_mean=1.34542429e-01,length_median=1.32429700e-01,length_95%HPD={7.74554200e-02,1.93182200e-01}])[&prob=9.71868542e-01,prob_stddev=2.54541472e-03,prob_range={9.70068662e-01,9.73668422e-01},prob(percent)="97",prob+-sd="97+-0"]:3.933515e-02[&length_mean=4.17689600e-02,length_median=3.93351500e-02,length_95%HPD={7.63868200e-03,8.20923300e-02}])[&prob=9.48670089e-01,prob_stddev=4.71373096e-04,prob_range={9.48336778e-01,9.49003400e-01},prob(percent)="95",prob+-sd="95+-0"]:4.779528e-02[&length_mean=5.02285289e-02,length_median=4.77952800e-02,length_95%HPD={8.87047600e-03,9.70133700e-02}])[&prob=5.21098593e-01,prob_stddev=3.95953401e-03,prob_range={5.18298780e-01,5.23898407e-01},prob(percent)="52",prob+-sd="52+-0"]:3.093311e-02[&length_mean=3.55937668e-02,length_median=3.09331100e-02,length_95%HPD={4.09672600e-06,8.28498600e-02}],27[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:9.955466e-02[&length_mean=1.01240573e-01,length_median=9.95546600e-02,length_95%HPD={4.05656600e-02,1.66840500e-01}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:3.449589e-01[&length_mean=3.49252659e-01,length_median=3.44958900e-01,length_95%HPD={2.26456600e-01,4.72417000e-01}])[&prob=9.99966669e-01,prob_stddev=4.71373096e-05,prob_range={9.99933338e-01,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.322429e-01[&length_mean=1.34784067e-01,length_median=1.32242900e-01,length_95%HPD={6.48030800e-02,2.11638300e-01}],31[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.372447e-02[&length_mean=5.58179421e-02,length_median=5.37244700e-02,length_95%HPD={2.50632300e-02,9.21941600e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.291644e-01[&length_mean=1.31498679e-01,length_median=1.29164400e-01,length_95%HPD={6.79415700e-02,1.98704900e-01}])[&prob=9.99966669e-01,prob_stddev=4.71373096e-05,prob_range={9.99933338e-01,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:9.029068e-02[&length_mean=9.29993480e-02,length_median=9.02906800e-02,length_95%HPD={3.79914900e-02,1.52194400e-01}],(2[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:7.525568e-02[&length_mean=7.76324174e-02,length_median=7.52556800e-02,length_95%HPD={3.03150000e-02,1.27110800e-01}],((3[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:9.629159e-02[&length_mean=9.87861879e-02,length_median=9.62915900e-02,length_95%HPD={2.52582400e-02,1.75114000e-01}],(4[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.034691e-02[&length_mean=1.19889504e-02,length_median=1.03469100e-02,length_95%HPD={7.47065200e-06,2.79315600e-02}],5[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.266066e-03[&length_mean=7.12203952e-03,length_median=5.26606600e-03,length_95%HPD={9.67888700e-07,2.03025100e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:2.587801e-01[&length_mean=2.62808214e-01,length_median=2.58780100e-01,length_95%HPD={1.62838000e-01,3.72223200e-01}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.918464e-01[&length_mean=1.95525929e-01,length_median=1.91846400e-01,length_95%HPD={9.58645400e-02,3.03913700e-01}],((6[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:2.418724e-01[&length_mean=2.45330741e-01,length_median=2.41872400e-01,length_95%HPD={1.60782600e-01,3.33496800e-01}],7[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.302648e-01[&length_mean=1.32312257e-01,length_median=1.30264800e-01,length_95%HPD={7.41915000e-02,1.90193100e-01}],(8[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:2.195298e-02[&length_mean=2.43005511e-02,length_median=2.19529800e-02,length_95%HPD={1.17429100e-05,5.26123200e-02}],((9[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.610580e-02[&length_mean=5.81105908e-02,length_median=5.61058000e-02,length_95%HPD={2.18374500e-02,9.61710300e-02}],10[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:9.687571e-02[&length_mean=9.89468654e-02,length_median=9.68757100e-02,length_95%HPD={5.17257900e-02,1.47685100e-01}])[&prob=9.85800947e-01,prob_stddev=4.71373096e-04,prob_range={9.85467635e-01,9.86134258e-01},prob(percent)="99",prob+-sd="99+-0"]:3.639848e-02[&length_mean=3.86902014e-02,length_median=3.63984800e-02,length_95%HPD={5.76894000e-03,7.55033700e-02}],(11[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.087430e-02[&length_mean=4.28666865e-02,length_median=4.08743000e-02,length_95%HPD={1.46532000e-02,7.55599700e-02}],12[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.698129e-02[&length_mean=4.88341782e-02,length_median=4.69812900e-02,length_95%HPD={1.77941700e-02,8.34304200e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:6.966531e-02[&length_mean=7.20618058e-02,length_median=6.96653100e-02,length_95%HPD={3.08795900e-02,1.17090600e-01}])[&prob=9.99366709e-01,prob_stddev=3.29961167e-04,prob_range={9.99133391e-01,9.99600027e-01},prob(percent)="100",prob+-sd="100+-0"]:5.094581e-02[&length_mean=5.29860273e-02,length_median=5.09458100e-02,length_95%HPD={1.78045600e-02,9.52601900e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.995538e-01[&length_mean=2.02527041e-01,length_median=1.99553800e-01,length_95%HPD={1.27294000e-01,2.86541700e-01}],(((13[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:5.114945e-02[&length_mean=5.30645961e-02,length_median=5.11494500e-02,length_95%HPD={2.10875600e-02,8.77379500e-02}],14[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:3.519834e-02[&length_mean=3.69373680e-02,length_median=3.51983400e-02,length_95%HPD={9.46677700e-03,6.62268100e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:6.992535e-02[&length_mean=7.21712225e-02,length_median=6.99253500e-02,length_95%HPD={3.22110900e-02,1.19759600e-01}],15[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:3.891840e-02[&length_mean=4.09285752e-02,length_median=3.89184000e-02,length_95%HPD={8.77126300e-03,7.84516000e-02}])[&prob=9.99700020e-01,prob_stddev=2.35686548e-04,prob_range={9.99533364e-01,9.99866676e-01},prob(percent)="100",prob+-sd="100+-0"]:7.611496e-02[&length_mean=7.84460492e-02,length_median=7.61149600e-02,length_95%HPD={2.95472000e-02,1.32031300e-01}],(16[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.155374e-02[&length_mean=4.32985027e-02,length_median=4.15537400e-02,length_95%HPD={1.38654800e-02,7.56292400e-02}],17[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:4.526885e-02[&length_mean=4.70180068e-02,length_median=4.52688500e-02,length_95%HPD={1.60354200e-02,8.04181200e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:7.670633e-02[&length_mean=7.93456982e-02,length_median=7.67063300e-02,length_95%HPD={2.74404200e-02,1.32259600e-01}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.745498e-01[&length_mean=1.77711456e-01,length_median=1.74549800e-01,length_95%HPD={9.82904800e-02,2.61005900e-01}])[&prob=9.03806413e-01,prob_stddev=1.13129543e-03,prob_range={9.03006466e-01,9.04606360e-01},prob(percent)="90",prob+-sd="90+-0"]:3.750095e-02[&length_mean=4.05601960e-02,length_median=3.75009500e-02,length_95%HPD={3.18394300e-03,8.33888700e-02}],((18[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:2.379313e-02[&length_mean=2.56524658e-02,length_median=2.37931300e-02,length_95%HPD={3.42086000e-03,5.06687900e-02}],19[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:2.113852e-02[&length_mean=2.31766619e-02,length_median=2.11385200e-02,length_95%HPD={1.72823600e-03,4.75501800e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.803026e-01[&length_mean=1.82881562e-01,length_median=1.80302600e-01,length_95%HPD={1.14374600e-01,2.57712200e-01}],20[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:8.169898e-02[&length_mean=8.39097586e-02,length_median=8.16989800e-02,length_95%HPD={3.89129400e-02,1.36887400e-01}])[&prob=6.20691954e-01,prob_stddev=1.97976700e-03,prob_range={6.19292047e-01,6.22091861e-01},prob(percent)="62",prob+-sd="62+-0"]:2.260243e-02[&length_mean=2.61909697e-02,length_median=2.26024300e-02,length_95%HPD={2.29424500e-06,6.23374900e-02}])[&prob=1.00000000e+00,prob_stddev=0.00000000e+00,prob_range={1.00000000e+00,1.00000000e+00},prob(percent)="100",prob+-sd="100+-0"]:1.926137e-01[&length_mean=1.95555732e-01,length_median=1.92613700e-01,length_95%HPD={1.06584600e-01,2.87520900e-01}])[&prob=8.85440971e-01,prob_stddev=5.79788908e-03,prob_range={8.81341244e-01,8.89540697e-01},prob(percent)="89",prob+-sd="89+-1"]:5.306725e-02[&length_mean=5.67537964e-02,length_median=5.30672500e-02,length_95%HPD={1.69720700e-04,1.15479500e-01}])[&prob=9.99833344e-01,prob_stddev=4.71373096e-05,prob_range={9.99800013e-01,9.99866676e-01},prob(percent)="100",prob+-sd="100+-0"]:6.664554e-02[&length_mean=6.91583858e-02,length_median=6.66455400e-02,length_95%HPD={2.46214100e-02,1.20726100e-01}]);
+end;

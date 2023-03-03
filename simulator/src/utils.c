@@ -7,6 +7,7 @@ void setSeed(int seed) {
         z_rndu = (unsigned int)(2* (int)time(NULL) + 1);
     else
         z_rndu = (unsigned int)seed;
+    printf("seed: %u\n", z_rndu);
 }
 
 double rndu(void) {
