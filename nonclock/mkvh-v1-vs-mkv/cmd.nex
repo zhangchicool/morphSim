@@ -5,6 +5,6 @@ Begin MrBayes;
 
   mcmc nchain=1 ngen=5000000 samplefr=250 printfr=100000 diagnfr=500000;
 
-  sumt;
+  sumt contype=all;
   sump;
 End;
