@@ -10,9 +10,9 @@ death <- 4.0
 tree  <- sim.bd.age(tmrca, rept, birth, death, mrca=T)
 
 # write trees with <50 internal nodes
-for(i in 1:rept) {
-	if(tree[[i]]$Nnode<50) {
-	  write.tree(tree[[i]], file="bd.trees", append=T)
+for (i in 1:rept) {
+	if (tree[[i]]$Nnode < 50) {
+		write.tree(tree[[i]], file="bd.trees", append=T)
 	}
 }
 

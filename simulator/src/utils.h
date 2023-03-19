@@ -1,7 +1,7 @@
 #ifndef utils_h
 #define utils_h
 
-static unsigned int z_rndu = 12345;
+static unsigned int z_rndu = 1234567;
 
 void   setSeed(int);
 double rndu(void);
