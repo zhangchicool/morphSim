@@ -22,6 +22,3 @@ do
   mv data.nex        data_$i.nex
   mv data.nex.con.tre sim_$i.con.tre
 done
-
-grep "TreeInfo"       run.log > tl_true.txt
-grep " TL     "       run.log > tl_estm.txt

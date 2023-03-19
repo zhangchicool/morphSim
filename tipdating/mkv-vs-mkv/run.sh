@@ -22,6 +22,3 @@ do
   mv data.nex        data_$i.nex
   mv data.nex.con.tre sim_$i.con.tre
 done
-
-grep " age\[0\]  "    run.log > th_estm.txt
-grep " clockrate "    run.log > cl_estm.txt
