@@ -18,9 +18,10 @@ int main (int argc, char *argv[]) {
     double clRate = 1.0, clVar = 0.0;
     int    seqLen = -1, clHetero = NO;
     double alpha = -1;   // negative value for Mk
+    double missing = 0.0;
 
     /* parse arguments */
-    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:a:")) != -1) {
+    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:a:m:")) != -1) {
         switch(c) {
             case 'i':  // input
                 input  = fopen(optarg, "r");
@@ -51,6 +52,9 @@ int main (int argc, char *argv[]) {
                 break;
             case 'a':  // symmetric Dirichlet alpha
                 alpha = atof(optarg);
+                break;
+            case 'm':  // % missing characters
+                missing = atof(optarg);
                 break;
         }
     }
@@ -90,8 +94,7 @@ int main (int argc, char *argv[]) {
             simulateData(fbdTree, seqLen, clHetero, alpha);
         
         /* write files */
-        writeMrBayesCmd(output, fbdTree);
-        // writeBEAST2XML(output, fbdTree, rho, ss);
+        writeMrBayesCmd(output, fbdTree, missing);
         
         /* free memory of trees */
         freeTree(evoTree);

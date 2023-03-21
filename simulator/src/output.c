@@ -1,7 +1,8 @@
 #include "tree.h"
+#include "utils.h"
 
 /* NEXUS file for MrBayes */
-void writeMrBayesCmd(FILE* fp, pPhyTree tree) {
+void writeMrBayesCmd(FILE* fp, pPhyTree tree, double missing) {
     int i, j;
 
     fprintf(fp, "#NEXUS\n");
@@ -16,8 +17,12 @@ void writeMrBayesCmd(FILE* fp, pPhyTree tree) {
     if (tree->nsites > 0) {
         for (i = 0; i < tree->ntips; i++) {
             fprintf(fp, "  %s\t", tree->tips[i]->name);
-            for (j = 0; j < tree->nsites; j++)
-                fprintf(fp, "%d", tree->tips[i]->sequence[j]);
+            for (j = 0; j < tree->nsites; j++) {
+                if (rndu() < missing)
+                    fprintf(fp, "?");
+                else
+                    fprintf(fp, "%d", tree->tips[i]->sequence[j]);
+            }
             fprintf(fp, "\n");
         }
     } else {
