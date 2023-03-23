@@ -162,41 +162,41 @@ mv  mkvh-v1-vs-fkv4/data_*.nex      mkvh-v1-vs-fkv
 mv  mkvh-v1-vs-fkv5/data_*.nex      mkvh-v1-vs-fkv
 
 ###
-grep " TL     "       fkv-a0.5-vs-fkv/run.log > fkv-a0.5-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkv-a0.5-vs-fkv/run.log > fkv-a0.5-vs-fkv/alpha_m.txt
+grep "      TL"       fkv-a0.5-vs-fkv/run.log > fkv-a0.5-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkv-a0.5-vs-fkv/run.log > fkv-a0.5-vs-fkv/alpha_m.txt
 
-grep " TL     "       fkv-a1-vs-fkv/run.log > fkv-a1-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkv-a1-vs-fkv/run.log > fkv-a1-vs-fkv/alpha_m.txt
+grep "      TL"       fkv-a1-vs-fkv/run.log > fkv-a1-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkv-a1-vs-fkv/run.log > fkv-a1-vs-fkv/alpha_m.txt
 
-grep " TL     "       fkv-a2-vs-fkv/run.log > fkv-a2-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkv-a2-vs-fkv/run.log > fkv-a2-vs-fkv/alpha_m.txt
+grep "      TL"       fkv-a2-vs-fkv/run.log > fkv-a2-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkv-a2-vs-fkv/run.log > fkv-a2-vs-fkv/alpha_m.txt
 
-grep " TL     "       fkvh-v1-a0.5-vs-fkv/run.log > fkvh-v1-a0.5-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkvh-v1-a0.5-vs-fkv/run.log > fkvh-v1-a0.5-vs-fkv/alpha_m.txt
+grep "      TL"       fkvh-v1-a0.5-vs-fkv/run.log > fkvh-v1-a0.5-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkvh-v1-a0.5-vs-fkv/run.log > fkvh-v1-a0.5-vs-fkv/alpha_m.txt
 
-grep " TL     "       fkvh-v1-a1-vs-fkv/run.log > fkvh-v1-a1-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkvh-v1-a1-vs-fkv/run.log > fkvh-v1-a1-vs-fkv/alpha_m.txt
+grep "      TL"       fkvh-v1-a1-vs-fkv/run.log > fkvh-v1-a1-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkvh-v1-a1-vs-fkv/run.log > fkvh-v1-a1-vs-fkv/alpha_m.txt
 
-grep " TL     "       fkvh-v1-a2-vs-fkv/run.log > fkvh-v1-a2-vs-fkv/tl_estm.txt
-grep " alpha_symdir " fkvh-v1-a2-vs-fkv/run.log > fkvh-v1-a2-vs-fkv/alpha_m.txt
+grep "      TL"       fkvh-v1-a2-vs-fkv/run.log > fkvh-v1-a2-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  fkvh-v1-a2-vs-fkv/run.log > fkvh-v1-a2-vs-fkv/alpha_m.txt
 
-grep " TL     "       mkv-vs-fkv/run.log > mkv-vs-fkv/tl_estm.txt
-grep " alpha_symdir " mkv-vs-fkv/run.log > mkv-vs-fkv/alpha_m.txt
+grep "      TL"       mkv-vs-fkv/run.log > mkv-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  mkv-vs-fkv/run.log > mkv-vs-fkv/alpha_m.txt
 
-grep " TL     "       mkvh-v1-vs-fkv/run.log > mkvh-v1-vs-fkv/tl_estm.txt
-grep " alpha_symdir " mkvh-v1-vs-fkv/run.log > mkvh-v1-vs-fkv/alpha_m.txt
+grep "      TL"       mkvh-v1-vs-fkv/run.log > mkvh-v1-vs-fkv/tl_estm.txt
+grep " alpha_symdir"  mkvh-v1-vs-fkv/run.log > mkvh-v1-vs-fkv/alpha_m.txt
 
 #
-grep " TL     "       fkv-a0.5-vs-mkv/run.log > fkv-a0.5-vs-mkv/tl_estm.txt
-grep " TL     "       fkv-a1-vs-mkv/run.log > fkv-a1-vs-mkv/tl_estm.txt
-grep " TL     "       fkv-a2-vs-mkv/run.log > fkv-a2-vs-mkv/tl_estm.txt
-grep " TL     "       fkvh-v1-a0.5-vs-mkv/run.log > fkvh-v1-a0.5-vs-mkv/tl_estm.txt
-grep " TL     "       fkvh-v1-a1-vs-mkv/run.log > fkvh-v1-a1-vs-mkv/tl_estm.txt
-grep " TL     "       fkvh-v1-a2-vs-mkv/run.log > fkvh-v1-a2-vs-mkv/tl_estm.txt
-grep " TL     "       mkv-vs-mkv/run.log > mkv-vs-mkv/tl_estm.txt
-grep " TL     "       mkvh-v1-vs-mkv/run.log > mkvh-v1-vs-mkv/tl_estm.txt
+grep "      TL"       fkv-a0.5-vs-mkv/run.log > fkv-a0.5-vs-mkv/tl_estm.txt
+grep "      TL"       fkv-a1-vs-mkv/run.log > fkv-a1-vs-mkv/tl_estm.txt
+grep "      TL"       fkv-a2-vs-mkv/run.log > fkv-a2-vs-mkv/tl_estm.txt
+grep "      TL"       fkvh-v1-a0.5-vs-mkv/run.log > fkvh-v1-a0.5-vs-mkv/tl_estm.txt
+grep "      TL"       fkvh-v1-a1-vs-mkv/run.log > fkvh-v1-a1-vs-mkv/tl_estm.txt
+grep "      TL"       fkvh-v1-a2-vs-mkv/run.log > fkvh-v1-a2-vs-mkv/tl_estm.txt
+grep "      TL"       mkv-vs-mkv/run.log > mkv-vs-mkv/tl_estm.txt
+grep "      TL"       mkvh-v1-vs-mkv/run.log > mkvh-v1-vs-mkv/tl_estm.txt
 
-grep "TreeInfo"       mkv-vs-mkv/run.log > mkv-vs-mkv/tl_true.txt
+# grep "TreeInfo"       mkv-vs-mkv/run.log > bd.tl.txt
 
 ###
 # for i in {1..100}

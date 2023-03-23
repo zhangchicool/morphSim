@@ -1,6 +1,6 @@
 library(vioplot)
 
-setwd("~/Documents/Research/2022-MorphSim/nonclock")
+setwd("~/Downloads/2022-MorphSim/nonclock/")
 
 par(mfrow = c(3,2), mar=c(2,2,0,2)+0.5, oma=c(0,2,2,2))
 
@@ -34,7 +34,8 @@ legend("topright", "RF distance", bty="n")
 
 
 ## 2. tree length ##
-tl_true  <- read.table("mkv-vs-mkv/tl_true.txt")
+tl_true  <- read.table("../simulator/bd.tl.txt")
+
 tl_estm1 <- read.table("mkv-vs-mkv/tl_estm.txt")
 tl_estm2 <- read.table("fkv-a2-vs-mkv/tl_estm.txt")
 tl_estm3 <- read.table("fkv-a1-vs-mkv/tl_estm.txt")
@@ -63,7 +64,7 @@ tl_covp7 <- sum(tl_estm7$V4 < tl_true$V3 & tl_estm7$V5 > tl_true$V3) / 100
 tl_covp8 <- sum(tl_estm8$V4 < tl_true$V3 & tl_estm8$V5 > tl_true$V3) / 100
 
 vioplot(tl_bias1, tl_bias2, tl_bias3, tl_bias4, tl_bias5, tl_bias6, tl_bias7, tl_bias8,
-        xaxt="n", ylim=c(-0.6,0.2))
+        xaxt="n", ylim=c(-0.6,0.3))
 par(new=T)
 plot(c(0.5,8.5), c(0,1), type="n", axes=F, xlab="", ylab="")
 points(c(tl_covp1, tl_covp2, tl_covp3, tl_covp4, tl_covp5, tl_covp6, tl_covp7, tl_covp8),
@@ -100,7 +101,7 @@ tl_covp7 <- sum(tl_estm7$V4 < tl_true$V3 & tl_estm7$V5 > tl_true$V3) / 100
 tl_covp8 <- sum(tl_estm8$V4 < tl_true$V3 & tl_estm8$V5 > tl_true$V3) / 100
 
 vioplot(tl_bias1, tl_bias2, tl_bias3, tl_bias4, tl_bias5, tl_bias6, tl_bias7, tl_bias8,
-        xaxt="n", ylim=c(-0.3,0.6))
+        xaxt="n", ylim=c(-0.4,0.5))
 par(new=T)
 plot(c(0.5,8.5), c(0,1), type="n", axes=F, xlab="", ylab="")
 points(c(tl_covp1, tl_covp2, tl_covp3, tl_covp4, tl_covp5, tl_covp6, tl_covp7, tl_covp8),
@@ -141,7 +142,7 @@ a_covp8 <- sum(a_estm8$V4 < 0.5 & a_estm8$V5 > 0.5) / 100
 plot(c(0,1), c(0,1), type="n", axes=F, xlab="", ylab="") # empty
 
 vioplot(a_bias1, a_bias2, a_bias3, a_bias4, a_bias5, a_bias6, a_bias7, a_bias8,
-        xaxt="n", ylim=c(-1,0.5))
+        xaxt="n", ylim=c(-1,1.5))
 par(new=T)
 plot(c(0.5,8.5), c(0,1), type="n", axes=F, xlab="", ylab="")
 points(c(a_covp1, a_covp2, a_covp3, a_covp4, a_covp5, a_covp6, a_covp7, a_covp8),
@@ -151,11 +152,11 @@ axis(side=4, at=seq(0,1,0.2))
 legend("topright", "alpha_symdir", bty="n")
 
 
-mtext("normalized distance", side=2, line=0,   adj=0.90, outer=T)
+mtext("normalized distance", side=2, line=0,   adj=0.95, outer=T)
 mtext("relative bias",       side=2, line=0,   adj=0.51, outer=T)
 mtext("coverage proportion", side=4, line=0,   adj=0.51, outer=T)
 mtext("relative bias",       side=2, line=0,   adj=0.15, outer=T)
-mtext("coverage proportion", side=4, line=0,   adj=0.15, outer=T)
+mtext("coverage proportion", side=4, line=0,   adj=0.10, outer=T)
 mtext("Mkv in inference",    side=3, line=0.5, adj=0.20, outer=T)
 mtext("Fkv in inference",    side=3, line=0.5, adj=0.80, outer=T)
 
