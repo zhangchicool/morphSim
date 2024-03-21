@@ -108,7 +108,7 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-void helpMsg() {
+void helpMsg(void) {
     printf("Compile: gcc -o fbdt *.c -lm\n");
     printf("Usage: ./fbdt -i <input> -o <output> -q <psi> -p <rho> -s <strat>\n");
     printf("              -c <rate> [-h] -v <var> -l <nchars> -a <alpha>\n");

@@ -10,7 +10,7 @@ int getChar(FILE *fp) {
     return c;
 }
 
-pPhyTree newTree () {
+pPhyTree newTree (void) {
     pPhyTree tree = (pPhyTree)malloc(sizeof(struct PhyTree));
     if (tree == NULL) {
         printf("Failed to initialize tree.\n");
@@ -29,7 +29,7 @@ pPhyTree newTree () {
     return tree;
 }
 
-pTreeNode newNode() {
+pTreeNode newNode(void) {
 	pTreeNode p = (pTreeNode)malloc(sizeof(struct TreeNode));
 	if (p == NULL) {
 		printf("Failed to allocate tree node.\n");

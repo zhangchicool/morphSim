@@ -18,7 +18,7 @@ void writeMrBayesCmd(FILE* fp, pPhyTree tree, double missing) {
         for (i = 0; i < tree->ntips; i++) {
             fprintf(fp, "  %s\t", tree->tips[i]->name);
             for (j = 0; j < tree->nsites; j++) {
-                if (rndu() < missing)
+                if (rndu() < missing && tree->tips[i]->age > 1E-8)
                     fprintf(fp, "?");
                 else
                     fprintf(fp, "%d", tree->tips[i]->sequence[j]);
@@ -39,7 +39,7 @@ void writeMrBayesCmd(FILE* fp, pPhyTree tree, double missing) {
     
     fprintf(fp, "Begin MrBayes;\n");
     for (i = 0; i < tree->ntips; i++) {
-        if (tree->tips[i]->age > 1e-8) {
+        if (tree->tips[i]->age > 1E-8) {
             fprintf(fp, "  calibrate %s=fixed(%.10lf);\n", tree->tips[i]->name, tree->tips[i]->age);
         }
     }
