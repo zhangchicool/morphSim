@@ -18,8 +18,6 @@ Begin MrBayes;
 
   mcmcp nchain=1 ngen=8000000 samplefr=250 printfr=100000 diagnfr=500000;
 
-  propset dirichlet(pi_symdir)$prob=15;
-
   mcmc;
   sumt burninfrac=0.4 contype=all;
   sump burninfrac=0.4;

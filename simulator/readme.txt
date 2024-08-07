@@ -20,6 +20,6 @@ Options
     Only variable characters are recorded.
 -a  Parameter (a>0) of symmetric Dirichlet distribution for drawing the
     state frequencies for each character. If not set or set to a negative
-    value, the character states have equal frequencies, i.e., Mk model.
+    value, the character states have equal frequencies, i.e., Mkv model.
 -m  Percentage (0≤%≤1) of missing states for fossils. Extant taxa have
     no missing state.
