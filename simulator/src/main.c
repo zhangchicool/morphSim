@@ -11,14 +11,13 @@ void helpMsg(void);
 int main (int argc, char *argv[]) {
     FILE   *input =NULL, *output =NULL;
     pPhyTree evoTree, fbdTree;
-    int    c;
     double psi = 0.0;    // fossil sampling rate   default: no fossil
     double rho = 1.0;    // extant sampling prob   default: complete
     char   *ss = "info";
     double clRate = 1.0, clVar = 0.0;
-    int    seqLen = -1, clHetero = NO;
-    double alpha = -1;   // negative value for Mk
-    double missing = 0.0;
+    int    c, nChar = -1, clHetero = NO, corr = NO;
+    double alpha = -1;    // negative value for Mk
+    double missing = 0.0; // percentage of missing states
 
     /* parse arguments */
     while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:a:m:")) != -1) {
@@ -47,8 +46,11 @@ int main (int argc, char *argv[]) {
             case 'h':  // clock heterogeneity
                 clHetero = YES;
                 break;
-            case 'l':  // morphological characters
-                seqLen = atoi(optarg);
+            case 'r':  // character correlation
+                corr = YES;
+                break;
+            case 'l':  // number of characters
+                nChar = atoi(optarg);
                 break;
             case 'a':  // symmetric Dirichlet alpha
                 alpha = atof(optarg);
@@ -84,15 +86,17 @@ int main (int argc, char *argv[]) {
         showTreeInfo(stdout, fbdTree);
 
         /* simulate clock rates on tree */
-        if (seqLen > 0 && clHetero == YES)
-            simulateRates(fbdTree, seqLen, clRate, clVar);
+        if (nChar > 0 && clHetero == YES)
+            simulateRates(fbdTree, nChar, clRate, clVar);
         else
             simulateRates(fbdTree, 1, clRate, clVar);
         
         /* simulate character data */
-        if (seqLen > 0)
-            simulateData(fbdTree, seqLen, clHetero, alpha);
-        
+        if (nChar > 0 && corr == NO)
+            simulateData(fbdTree, nChar, clHetero, alpha);
+        if (nChar > 0 && corr == YES)
+            simulateData_corr(fbdTree, nChar, clHetero, alpha);
+
         /* write files */
         writeMrBayesCmd(output, fbdTree, missing);
         

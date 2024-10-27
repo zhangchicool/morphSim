@@ -16,10 +16,10 @@ void allocSeqs(pTreeNode p, int len) {
     allocSeqs(p->rlink, len);
 }
 
-void simChars(pTreeNode p, double base, int hetero, int pos, int k, double *pi, double beta) {
+void simChars(pTreeNode p, double base, int hetero, int pos, double *pi) {
     /* simulate k state characters at pos(ition) */
     int i, astate;
-    double c, x, dist, trProb[k];
+    double c, x, dist, beta, trProb[2];
     
     if (p->alink == NULL) {
         // initialize character at the root
@@ -36,12 +36,17 @@ void simChars(pTreeNode p, double base, int hetero, int pos, int k, double *pi, 
         else
             dist = p->brl * base * p->rates[0];
 
+        beta = 0.0;
+        for (i = 0; i < 2; i++)
+            beta += pi[i] * pi[i];
+        beta = 1.0 / (1 - beta);
+
         // calculate transition probs based on ancestral state and distance
-        for (i = 0; i < k; i++) {
-            if (astate == i)
-                trProb[i] = exp(-beta * dist) + pi[i] * (1 - exp(-beta * dist)); // no change
+        for (i = 0; i < 2; i++) {
+            if (astate == i)  // no change
+                trProb[i] = exp(-beta * dist) + pi[i] * (1 - exp(-beta * dist));
             else
-                trProb[i] = pi[i] * (1 - exp(-beta * dist));                     // change
+                trProb[i] = pi[i] * (1 - exp(-beta * dist));  // change
         }
         
         // simulate the end state
@@ -52,10 +57,10 @@ void simChars(pTreeNode p, double base, int hetero, int pos, int k, double *pi, 
     }
     
     if (p->llink != NULL)
-        simChars(p->llink, base, hetero, pos, k, pi, beta);
+        simChars(p->llink, base, hetero, pos, pi);
     
     if (p->rlink != NULL)
-        simChars(p->rlink, base, hetero, pos, k, pi, beta);
+        simChars(p->rlink, base, hetero, pos, pi);
 }
 
 int isConstChar(pTreeNode* tips, int ntips, int pos) {
@@ -69,28 +74,17 @@ int isConstChar(pTreeNode* tips, int ntips, int pos) {
 }
 
 void simulateData(pPhyTree tree, int len, int hetero, double alpha) {
-    int i, k, l, n2st, n3st, n4st;
-    double pi[4], g[4], sum_g, beta;
+    int i, k, l;
+    double pi[2], g[2], sum_g;
     
     assert(len > 0);
     
     allocSeqs(tree->root, len);
     tree->nsites = len;
     
-    /* binary to 4-state characters with proportions of 0.5, 0.3, 0.2 */
-    n2st = (int)(len * 0.5);
-    n3st = (int)(len * 0.3);
-    n4st = len - n2st - n3st;
-
     /* simulate discrete characters given the tree */
+    k = 2;  // only binary characters for now
     for (l = 0; l < len; l++) {
-        if (l < n2st)
-            k = 2;
-        else if (l < n2st+n3st)
-            k = 3;
-        else
-            k = 4;
-        
         // generate base frequencies
         if (alpha > 0) {
             // from symDir(alpha) distribution
@@ -106,15 +100,14 @@ void simulateData(pPhyTree tree, int len, int hetero, double alpha) {
                 pi[i] = 1.0 / k;
         }
         
-        beta = 0.0;  // used in transition prob calculation
-        for (i = 0; i < k; i++)
-            beta += pi[i] * pi[i];
-        beta = 1.0 / (1 - beta);
-
         /* keep only variable characters at the tips */
         do {
-            simChars(tree->root, tree->rbase, hetero, l, k, pi, beta);
+            simChars(tree->root, tree->rbase, hetero, l, pi);
         }
         while (isConstChar(tree->tips, tree->ntips, l));
     }
+}
+
+void simulateData_corr(pPhyTree tree, int len, int hetero, double alpha) {
+    
 }

@@ -2,5 +2,6 @@
 #define seqs_h
 
 void simulateData(pPhyTree tree, int len, int hetero, double alpha);
+void simulateData_corr(pPhyTree tree, int len, int hetero, double alpha);
 
 #endif
