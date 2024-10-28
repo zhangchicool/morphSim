@@ -15,11 +15,11 @@ Options
 -h  When used, each character has its own evolutionary rate variation,
     i.e., the relative clock rates are independent across branches and
     characters. Otherwise, each branch rate is shared by all characters.
--l  Number of characters (l≥0): binary to up to 4-state characters with
-    proportions of 0.5, 0.3, 0.2 (TODO: make this changeable). 
-    Only variable characters are recorded.
+-r  When used, each pair of binary characters are correlated.
+    Default: all characters are independent.
+-l  Number of binary characters (l≥0). Only variable characters are recorded.
 -a  Parameter (a>0) of symmetric Dirichlet distribution for drawing the
     state frequencies for each character. If not set or set to a negative
-    value, the character states have equal frequencies, i.e., Mkv model.
+    value, the character states have equal frequencies.
 -m  Percentage (0≤%≤1) of missing states for fossils. Extant taxa have
     no missing state.
