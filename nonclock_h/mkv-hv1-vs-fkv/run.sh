@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Fkv(a=1.0) -vs- Fkv(a~exp(1))" > run.log
+echo "MkvH(v=1,a=inf) -vs- Fkv(a~exp(1))" > run.log
 
 for i in {1..100}
 do
@@ -10,7 +10,7 @@ do
   sed -n "$i"p  ../bd.trees > bd.tre
   
   # generate a data file 
-  ../fbdt -i bd.tre -o data.nex -a 1.0 -l 200 >> run.log
+  ../fbdt -i bd.tre -o data.nex -hv 1.0 -l 200 >> run.log
   
   # run mrbayes to infer the parameters
   ../mb cmd.nex >> run.log
