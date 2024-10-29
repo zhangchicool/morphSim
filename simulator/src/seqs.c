@@ -145,7 +145,7 @@ void simChars_pair(pTreeNode p, double base, int hetero, int pos,
                 if (j != i)
                     x += Q[i][j]/(-Q[i][i]);
             }
-            i = j;
+            i = j - 1;
             t += rndExp(-Q[i][i]);
         }
         // save the end state
@@ -165,9 +165,10 @@ void simChars_pair(pTreeNode p, double base, int hetero, int pos,
        [b*pi_T   0      .    f*pi_G]   [b 0 . f][ 0   0  pi_A  0 ]
        [  0    e*pi_C f*pi_A   .   ]   [0 e f .][ 0   0    0 pi_G]
  */
-void simulateData_corr(pPhyTree tree, int len, int hetero, double alpha) {
+void simulateData_corr(pPhyTree tree, int len, int hetero,
+                       double aD, double aG) {
     int i, j, l;
-    double pi[4], af[4], g[4], sum, Q[4][4]={{0}};
+    double pi[4], g[4], sum, af[6]={0}, Q[4][4]={{0}};
     
     allocSeqs(tree->root, len);
     tree->nsites = len;
@@ -175,11 +176,11 @@ void simulateData_corr(pPhyTree tree, int len, int hetero, double alpha) {
     /* simulate each pair of characters given the tree */
     for (l = 0; l < len; l += 2) {
         // generate base frequencies
-        if (alpha > 0) {
-            // from symDir(alpha) distribution
+        if (aD > 0) {
+            // from symDir(a) distribution
             sum = 0.0;
             for (i = 0; i < 4; i++) {
-                g[i] = rndGamma(alpha, 1);
+                g[i] = rndGamma(aD, 1);
                 sum += g[i];
             }
             for (i = 0; i < 4; i++)
@@ -189,18 +190,20 @@ void simulateData_corr(pPhyTree tree, int len, int hetero, double alpha) {
                 pi[i] = 0.25;
         }
         // generate a, b, e, f (c = d = 0)
-        for (i = 0; i < 4; i++)
-            af[i] = rndExp(1.0);
-        
+        af[0] = rndGamma(aG, aG);
+        af[1] = rndGamma(aG, aG);
+        af[4] = rndGamma(aG, aG);
+        af[5] = rndGamma(aG, aG);
+
         // set up the Q matirx and rescale the average rate to 2.0
         Q[1][0] = af[0] * pi[0];
         Q[2][0] = af[1] * pi[0];
         Q[0][1] = af[0] * pi[1];
-        Q[3][1] = af[2] * pi[1];
+        Q[3][1] = af[4] * pi[1];
         Q[0][2] = af[1] * pi[2];
-        Q[3][2] = af[3] * pi[2];
-        Q[1][3] = af[2] * pi[3];
-        Q[2][3] = af[3] * pi[3];
+        Q[3][2] = af[5] * pi[2];
+        Q[1][3] = af[4] * pi[3];
+        Q[2][3] = af[5] * pi[3];
         Q[0][0] = -Q[0][1] - Q[0][2];
         Q[1][1] = -Q[1][0] - Q[1][3];
         Q[2][2] = -Q[2][0] - Q[2][3];

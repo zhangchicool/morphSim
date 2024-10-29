@@ -16,11 +16,12 @@ int main (int argc, char *argv[]) {
     char   *ss = "info";
     double clRate = 1.0, clVar = 0.0;
     int    c, nChar = -1, clHetero = NO, corr = NO;
-    double alpha = -1;    // negative value for Mk
+    double alphaD = -1.;  // negative value for equal frequencies
+    double alphaG = 1.0;  // gamma shape for generating GTR rates
     double missing = 0.0; // percentage of missing states
 
     /* parse arguments */
-    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:l:a:m:")) != -1) {
+    while ((c = getopt(argc, argv, "i:o:q:p:s:c:hv:r:l:a:m:")) != -1) {
         switch(c) {
             case 'i':  // input
                 input  = fopen(optarg, "r");
@@ -48,12 +49,13 @@ int main (int argc, char *argv[]) {
                 break;
             case 'r':  // character correlation
                 corr = YES;
+                alphaG = atof(optarg);
                 break;
             case 'l':  // number of characters
                 nChar = atoi(optarg);
                 break;
             case 'a':  // symmetric Dirichlet alpha
-                alpha = atof(optarg);
+                alphaD = atof(optarg);
                 break;
             case 'm':  // % missing characters
                 missing = atof(optarg);
@@ -93,9 +95,9 @@ int main (int argc, char *argv[]) {
         
         /* simulate character data */
         if (nChar > 0 && corr == NO)
-            simulateData(fbdTree, nChar, clHetero, alpha);
-        if (nChar > 0 && corr == YES)
-            simulateData_corr(fbdTree, nChar, clHetero, alpha);
+            simulateData(fbdTree, nChar, clHetero, alphaD);
+        else if (nChar > 0 && corr == YES)
+            simulateData_corr(fbdTree, nChar, clHetero, alphaD, alphaG);
 
         /* write files */
         writeMrBayesCmd(output, fbdTree, missing);

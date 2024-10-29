@@ -15,7 +15,8 @@ Options
 -h  When used, each character has its own evolutionary rate variation,
     i.e., the relative clock rates are independent across branches and
     characters. Otherwise, each branch rate is shared by all characters.
--r  When used, each pair of binary characters are correlated.
+-r  When used, each pair of binary characters are correlated, followed
+    by a parameter (>0) for drawing rates from a gamma distribution.
     Default: all characters are independent.
 -l  Number of binary characters (l≥0). Only variable characters are recorded.
 -a  Parameter (a>0) of symmetric Dirichlet distribution for drawing the
