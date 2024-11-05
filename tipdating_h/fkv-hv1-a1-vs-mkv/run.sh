@@ -2,6 +2,8 @@
 
 echo "FkvH(v=1,a=1) -vs- Mkv" > run.log
 
+echo "RFdist" > dist_rf.txt
+
 for i in {1..100}
 do
   echo "** tree $i **" >> run.log
@@ -24,4 +26,5 @@ do
 done
 
 grep "     age\[0\] " run.log > th_estm.txt
-grep "     clockrate" run.log > cl_estm.txt
+grep "     clockrate" run.log > cl_base.txt
+grep "     ilnvar   " run.log > cl_var.txt

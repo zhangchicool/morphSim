@@ -2,6 +2,8 @@
 
 echo "Fkv(a=1.0) -vs- Mkv" > run.log
 
+echo "RFdist" > dist_rf.txt
+
 for i in {1..100}
 do
   echo "** tree $i **" >> run.log

@@ -2,6 +2,8 @@
 
 echo "FkvH(v=4,a=5) -vs- Fkv(a~exp(1))" > run.log
 
+echo "RFdist" > dist_rf.txt
+
 for i in {1..100}
 do
   echo "** tree $i **" >> run.log
