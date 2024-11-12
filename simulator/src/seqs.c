@@ -6,7 +6,7 @@ void allocSeqs(pTreeNode p, int len) {
     if (p == NULL) return;
     
     // allocate space for sequence
-    p->sequence = (int *)malloc(len * sizeof(int));
+    p->sequence = (int *)calloc(len, sizeof(int));
     if (p->sequence == NULL) {
         printf("Failed to allocate sequence.\n");
         exit(1);
@@ -26,10 +26,30 @@ int isConstChar(pTreeNode* tips, int ntips, int pos) {
     return 1; // when constant
 }
 
-void simChars(pTreeNode p, double base, int hetero, int pos, double *pi) {
-    /* simulate binary characters at pos(ition) */
+void baseFreq(int k, double alpha, double *pi) {
+    int i;
+    double sum_g, g[k];
+    
+    // generate base frequencies
+    if (alpha > 0) {  // from symDir(a)
+        sum_g = 0.0;
+        for (i = 0; i < k; i++) {
+            g[i] = rndGamma(alpha, 1);
+            sum_g += g[i];
+        }
+        for (i = 0; i < k; i++)
+            pi[i] = g[i] / sum_g;
+    } else {
+        for (i = 0; i < k; i++)
+            pi[i] = 1.0 / k;  // equal frequencies
+    }
+}
+
+void simChars(pTreeNode p, double base, int hetero, int pos,
+              int k, double *pi) {
+    /* simulate discrete characters at pos(ition) */
     int i, astate;
-    double u, x, dist, beta, trProb[2];
+    double u, x, dist, beta, trProb[k];
     
     if (p->alink == NULL) {
         // initialize character at the root
@@ -47,12 +67,12 @@ void simChars(pTreeNode p, double base, int hetero, int pos, double *pi) {
             dist = p->brl * base * p->rates[0];
 
         beta = 0.0;
-        for (i = 0; i < 2; i++)
+        for (i = 0; i < k; i++)
             beta += pi[i] * pi[i];
         beta = 1.0 / (1 - beta);
 
         // calculate transition probs based on ancestral state and distance
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < k; i++) {
             if (astate == i)  // no change
                 trProb[i] = exp(-beta * dist) + pi[i] * (1 - exp(-beta * dist));
             else
@@ -67,51 +87,38 @@ void simChars(pTreeNode p, double base, int hetero, int pos, double *pi) {
     }
     
     if (p->llink != NULL)
-        simChars(p->llink, base, hetero, pos, pi);
+        simChars(p->llink, base, hetero, pos, k, pi);
     
     if (p->rlink != NULL)
-        simChars(p->rlink, base, hetero, pos, pi);
+        simChars(p->rlink, base, hetero, pos, k, pi);
 }
 
 void simulateData(pPhyTree tree, int len, int hetero, double alpha) {
-    int i, k, l;
-    double pi[2], g[2], sum_g;
+    /* simulate discrete characters (binary for now) given the tree */
+    int l;
+    double pi[2];
     
     assert(len > 0);
     
     allocSeqs(tree->root, len);
     tree->nsites = len;
     
-    /* simulate discrete characters given the tree */
-    k = 2;  // only binary characters for now
     for (l = 0; l < len; l++) {
         // generate base frequencies
-        if (alpha > 0) {
-            // from symDir(alpha) distribution
-            sum_g = 0.0;
-            for (i = 0; i < k; i++) {
-                g[i] = rndGamma(alpha, 1);
-                sum_g += g[i];
-            }
-            for (i = 0; i < k; i++)
-                pi[i] = g[i] / sum_g;
-        } else {
-            for (i = 0; i < k; i++)
-                pi[i] = 1.0 / k;
-        }
+        baseFreq(2, alpha, pi);
         
         /* keep only variable characters at the tips */
         do {
-            simChars(tree->root, tree->rbase, hetero, l, pi);
+            simChars(tree->root, tree->rbase, hetero, l, 2, pi);
         }
         while (isConstChar(tree->tips, tree->ntips, l));
     }
 }
 
 
-void simChars_pair(pTreeNode p, double base, int hetero, int pos,
-                   double pi[4], double Q[4][4]) {
-    /* simulate a pair of (correlated) binary characters at pos(ition) */
+void simChars_corr(pTreeNode p, double base, int hetero, int pos,
+                   double pi[8], double Q[8][8]) {
+    /* simulate correlated binary characters at pos(ition) */
     int i, j, astate;
     double u, x, t, dist;
 
@@ -120,7 +127,6 @@ void simChars_pair(pTreeNode p, double base, int hetero, int pos,
         u = rndu();
         for (x = pi[0], i = 0; u > x; i++)
             x += pi[i+1];
-        // use 0, 1, 2, 3 to represent 00, 01, 10, 11
         p->sequence[pos] = i;
     }
     else {
@@ -153,61 +159,44 @@ void simChars_pair(pTreeNode p, double base, int hetero, int pos,
     }
     
     if (p->llink != NULL)
-        simChars_pair(p->llink, base, hetero, pos, pi, Q);
+        simChars_corr(p->llink, base, hetero, pos, pi, Q);
     
     if (p->rlink != NULL)
-        simChars_pair(p->rlink, base, hetero, pos, pi, Q);
+        simChars_corr(p->rlink, base, hetero, pos, pi, Q);
 }
 
-/* use GTR model for each pair of correlated characters
-       [  .    a*pi_C b*pi_A   0   ]   [. a b 0][pi_T 0    0   0 ]
-   Q = [a*pi_T   .      0    e*pi_G] = [a . 0 e][ 0  pi_C  0   0 ]
-       [b*pi_T   0      .    f*pi_G]   [b 0 . f][ 0   0  pi_A  0 ]
-       [  0    e*pi_C f*pi_A   .   ]   [0 e f .][ 0   0    0 pi_G]
- */
 void simulateData_corr(pPhyTree tree, int len, int hetero,
                        double aD, double aG) {
-    int i, j, l;
-    double pi[4], g[4], sum, af[6]={0}, Q[4][4]={{0}};
+    /* simulate discrete characters (binary for now) given the tree;
+       use GTR-like model for each group of correlated characters */
+    int i, j, l, len2;
+    double sum, pi[8]={0}, e[12]={0}, Q[8][8]={{0}};
     
     allocSeqs(tree->root, len);
     tree->nsites = len;
     
-    /* simulate each pair of characters given the tree */
-    for (l = 0; l < len; l += 2) {
+    /* simulate 70% double-correlated characters
+         [. a b 0][pi_1 0    0   0 ]
+     Q = [a . 0 c][ 0  pi_2  0   0 ]
+         [b 0 . d][ 0   0  pi_3  0 ]
+         [0 c d .][ 0   0    0 pi_4] */
+    for (l = 0; l < (int)(len * 0.7); l += 2) {
         // generate base frequencies
-        if (aD > 0) {
-            // from symDir(a) distribution
-            sum = 0.0;
-            for (i = 0; i < 4; i++) {
-                g[i] = rndGamma(aD, 1);
-                sum += g[i];
-            }
-            for (i = 0; i < 4; i++)
-                pi[i] = g[i] / sum;
-        } else {
-            for (i = 0; i < 4; i++)
-                pi[i] = 0.25;
-        }
-        // generate a, b, e, f (c = d = 0)
-        af[0] = rndGamma(aG, aG);
-        af[1] = rndGamma(aG, aG);
-        af[4] = rndGamma(aG, aG);
-        af[5] = rndGamma(aG, aG);
-
-        // set up the Q matirx and rescale the average rate to 2.0
-        Q[1][0] = af[0] * pi[0];
-        Q[2][0] = af[1] * pi[0];
-        Q[0][1] = af[0] * pi[1];
-        Q[3][1] = af[4] * pi[1];
-        Q[0][2] = af[1] * pi[2];
-        Q[3][2] = af[5] * pi[2];
-        Q[1][3] = af[4] * pi[3];
-        Q[2][3] = af[5] * pi[3];
-        Q[0][0] = -Q[0][1] - Q[0][2];
-        Q[1][1] = -Q[1][0] - Q[1][3];
-        Q[2][2] = -Q[2][0] - Q[2][3];
-        Q[3][3] = -Q[3][1] - Q[3][2];
+        baseFreq(4, aD, pi);
+        
+        // generate a, b, c, d from gamma distribution
+        for (i = 0; i < 4; i++)
+            e[i] = rndGamma(aG, aG);
+        // set up the Q matirx
+        Q[0][1] = e[0] * pi[1];  Q[0][2] = e[1] * pi[2];
+        Q[1][0] = e[0] * pi[0];  Q[1][3] = e[2] * pi[3];
+        Q[2][0] = e[1] * pi[0];  Q[2][3] = e[3] * pi[3];
+        Q[3][1] = e[2] * pi[1];  Q[3][2] = e[3] * pi[2];
+        Q[0][0] = -Q[0][1] -Q[0][2];
+        Q[1][1] = -Q[1][0] -Q[1][3];
+        Q[2][2] = -Q[2][0] -Q[2][3];
+        Q[3][3] = -Q[3][1] -Q[3][2];
+        // and rescale the average rate to 2.0
         sum = 0.0;
         for(i = 0; i < 4; i++)
             sum -= pi[i] * Q[i][i];
@@ -215,10 +204,12 @@ void simulateData_corr(pPhyTree tree, int len, int hetero,
             for(j = 0; j < 4; j++)
                 Q[i][j] = Q[i][j] * 2.0 / sum;
         
+        // start evolving from the root to the tips,
+        // and keep only variable characters at the tips
         do {
-            simChars_pair(tree->root, tree->rbase, hetero, l, pi, Q);
-        
-            // convert T, C, A, G to 00, 01, 10, 11
+            simChars_corr(tree->root, tree->rbase, hetero, l, pi, Q);
+
+            // convert 0, 1, 2, 3 to 00, 01, 10, 11
             for (i = 0; i < tree->ntips; i++) {
                 switch (tree->tips[i]->sequence[l]) {
                     case 0:
@@ -243,8 +234,109 @@ void simulateData_corr(pPhyTree tree, int len, int hetero,
                         break;
                 }
             }
-        }   // keep only variable characters at the tips
-        while (isConstChar(tree->tips, tree->ntips, l) ||
-               isConstChar(tree->tips, tree->ntips, l+1));
+        } while (isConstChar(tree->tips, tree->ntips, l) ||
+                 isConstChar(tree->tips, tree->ntips, l+1));
+    }
+    
+    /* and 30% triple-correlated characters
+         [. a b 0 i 0 0 0][pi_1 0   0   0    0   0   0   0 ]
+         [a . 0 c 0 j 0 0][ 0  pi_2 0   0    0   0   0   0 ]
+         [b 0 . d 0 0 k 0][ 0   0  pi_3 0    0   0   0   0 ]
+     Q = [0 c d . 0 0 0 l][ 0   0   0  pi_4  0   0   0   0 ]
+         [i 0 0 0 . e f 0][ 0   0   0   0  pi_5  0   0   0 ]
+         [0 j 0 0 e . 0 g][ 0   0   0   0    0 pi_6  0   0 ]
+         [0 0 k 0 f 0 . h][ 0   0   0   0    0   0 pi_7  0 ]
+         [0 0 0 l 0 g h .][ 0   0   0   0    0   0   0 pi_8] */
+    len2 = l;
+    for (l = len2; l < len; l += 3) {
+        // generate base frequencies
+        baseFreq(8, aD, pi);
+
+        // generate 12 ex. rates from gamma distribution
+        for (i = 0; i < 12; i++)
+            e[i] = rndGamma(aG, aG);
+        // set up the Q matirx
+        Q[0][1] = e[0] * pi[1];  Q[0][2] = e[1] * pi[2]; Q[0][4] = e[8] * pi[4];
+        Q[1][0] = e[0] * pi[0];  Q[1][3] = e[2] * pi[3]; Q[1][5] = e[9] * pi[5];
+        Q[2][0] = e[1] * pi[0];  Q[2][3] = e[3] * pi[3]; Q[2][6] = e[10] * pi[6];
+        Q[3][1] = e[2] * pi[1];  Q[3][2] = e[3] * pi[2]; Q[3][7] = e[11] * pi[7];
+        Q[4][0] = e[8] * pi[0];  Q[4][5] = e[4] * pi[5]; Q[4][6] = e[5] * pi[6];
+        Q[5][1] = e[9] * pi[1];  Q[5][4] = e[4] * pi[4]; Q[5][7] = e[6] * pi[7];
+        Q[6][2] = e[10] * pi[2]; Q[6][4] = e[5] * pi[4]; Q[6][7] = e[7] * pi[7];
+        Q[7][3] = e[11] * pi[3]; Q[7][5] = e[6] * pi[5]; Q[7][6] = e[7] * pi[6];
+        Q[0][0] = -Q[0][1] -Q[0][2] -Q[0][4];
+        Q[1][1] = -Q[1][0] -Q[1][3] -Q[1][5];
+        Q[2][2] = -Q[2][0] -Q[2][3] -Q[2][6];
+        Q[3][3] = -Q[3][1] -Q[3][2] -Q[3][7];
+        Q[4][4] = -Q[4][0] -Q[4][5] -Q[4][6];
+        Q[5][5] = -Q[5][1] -Q[5][4] -Q[5][7];
+        Q[6][6] = -Q[6][2] -Q[6][4] -Q[6][7];
+        Q[7][7] = -Q[7][3] -Q[7][5] -Q[7][6];
+        // and rescale the average rate to 3.0
+        sum = 0.0;
+        for(i = 0; i < 8; i++)
+            sum -= pi[i] * Q[i][i];
+        for(i = 0; i < 8; i++)
+            for(j = 0; j < 8; j++)
+                Q[i][j] = Q[i][j] * 3.0 / sum;
+
+        // start evolving from the root to the tips,
+        // and keep only variable characters at the tips
+        do {
+            simChars_corr(tree->root, tree->rbase, hetero, l, pi, Q);
+            
+            // convert 0,   1,   2,   3,   4,   5,   6,   7
+            //      to 000, 001, 010, 011, 100, 101, 110, 111
+            for (i = 0; i < tree->ntips; i++) {
+                switch (tree->tips[i]->sequence[l]) {
+                    case 0:
+                        tree->tips[i]->sequence[l+1] = 0;
+                        tree->tips[i]->sequence[l+2] = 0;
+                        break;
+                    case 1:
+                        tree->tips[i]->sequence[l]   = 0;
+                        tree->tips[i]->sequence[l+1] = 0;
+                        tree->tips[i]->sequence[l+2] = 1;
+                       break;
+                    case 2:
+                        tree->tips[i]->sequence[l]   = 0;
+                        tree->tips[i]->sequence[l+1] = 1;
+                        tree->tips[i]->sequence[l+2] = 0;
+                       break;
+                    case 3:
+                        tree->tips[i]->sequence[l]   = 0;
+                        tree->tips[i]->sequence[l+1] = 1;
+                        tree->tips[i]->sequence[l+2] = 1;
+                       break;
+                    case 4:
+                        tree->tips[i]->sequence[l]   = 1;
+                        tree->tips[i]->sequence[l+1] = 0;
+                        tree->tips[i]->sequence[l+2] = 0;
+                        break;
+                    case 5:
+                        tree->tips[i]->sequence[l]   = 1;
+                        tree->tips[i]->sequence[l+1] = 0;
+                        tree->tips[i]->sequence[l+2] = 1;
+                       break;
+                    case 6:
+                        tree->tips[i]->sequence[l]   = 1;
+                        tree->tips[i]->sequence[l+1] = 1;
+                        tree->tips[i]->sequence[l+2] = 0;
+                       break;
+                    case 7:
+                        tree->tips[i]->sequence[l]   = 1;
+                        tree->tips[i]->sequence[l+1] = 1;
+                        tree->tips[i]->sequence[l+2] = 1;
+                       break;
+                    default:
+                        printf("Unknown state %d at %d-th character of taxon %s\n",
+                               tree->tips[i]->sequence[l], l+1, tree->tips[i]->name);
+                        exit(1);
+                        break;
+                }
+            }
+        } while (isConstChar(tree->tips, tree->ntips, l)   ||
+                 isConstChar(tree->tips, tree->ntips, l+1) ||
+                 isConstChar(tree->tips, tree->ntips, l+2));
     }
 }

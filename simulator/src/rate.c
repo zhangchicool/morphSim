@@ -6,7 +6,7 @@ void allocRates(pTreeNode p, int len) {
     if (p == NULL) return;
     
     // allocate space for rates
-    p->rates = (double *)malloc(len * sizeof(double));
+    p->rates = (double *)calloc(len, sizeof(double));
     if (p->rates == NULL) {
         printf("Failed to allocate rates.\n");
         exit(1);
