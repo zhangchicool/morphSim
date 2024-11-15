@@ -47,7 +47,7 @@ pTreeNode newNode(void) {
 }
 
 pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
-    int i, c;
+    int i, c, k;
     pTreeNode q = newNode();
     
     if (side == LEFT) {
@@ -73,9 +73,9 @@ pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
         c = getChar(fp);
         if (c == ':') {
             if (side == ANCES)
-                fscanf(fp, "%lf", &p->brl);
+                k = fscanf(fp, "%lf", &p->brl);
             else
-                fscanf(fp, "%lf", &q->brl);
+                k = fscanf(fp, "%lf", &q->brl);
         }
         else
             ungetc(c, fp);
@@ -88,9 +88,9 @@ pTreeNode readNode(FILE *fp, pTreeNode p, int side) {
             }
             else if (c == ':') {
                 if (side == ANCES)
-                    fscanf(fp, "%lf", &p->brl);
+                    k = fscanf(fp, "%lf", &p->brl);
                 else
-                    fscanf(fp, "%lf", &q->brl);
+                    k = fscanf(fp, "%lf", &q->brl);
                 break;
             }
             q->name[i] = c;
