@@ -362,3 +362,23 @@ void freeTree(pPhyTree tree) {
     free (tree->tips);
 	free (tree);
 }
+
+/* this is for rooted tree */
+void showTreeInfo(FILE *fp, pPhyTree tree) {
+    int i, n, m, k;
+    
+    fprintf(fp, "TreeInfo ");
+    fprintf(fp, "%lf\t", tree->height);
+    fprintf(fp, "%lf\t", tree->length);
+
+    n = m = k = 0;
+    for (i = 0; i < tree->ntips; i++) {
+        if (tree->tips[i]->age < 1E-8)
+            n++;  // number of extant taxa
+        else if (tree->tips[i]->brl > 0.0)
+            m++;  // number of tip fossils
+        else
+            k++;  // number of anc fossils
+    }
+    fprintf(fp, "%d\t%d\t%d\n", n, m, k);
+}

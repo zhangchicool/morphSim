@@ -39,4 +39,6 @@ void writeTree(FILE* fp, pPhyTree tree);
 
 void freeTree(pPhyTree tree);
 
+void showTreeInfo(FILE *fp, pPhyTree tree);
+
 #endif

@@ -16,20 +16,19 @@ void allocRates(pTreeNode p, int len) {
     allocRates(p->rlink, len);
 }
 
-void simulateRates(pPhyTree tree, int len, double base, double var) {
+void simulateRates(pPhyTree tree, int len, int npart, double base, double var) {
     /* simulate branch rates under the given clock model */
-    int  i, l;
+    int  i, l, n, m;
     pTreeNode p;
-    double mu, sigma;
+    double mu, sigma, rate;
     
-    assert(len > 0);
+    assert(npart > 0 && npart <= len);
 
     /* base clock rate and variance */
     tree->rbase = base;
     tree->rvar  = var;
     allocRates(tree->root, len);
-
-    /* generate branch rates */
+    
     for (i = 0; i < 2 * tree->ntips -2; i++) {
         if (i < tree->ntips)
             p = tree->tips[i];
@@ -37,11 +36,22 @@ void simulateRates(pPhyTree tree, int len, double base, double var) {
             p = tree->ints[i - tree->ntips];
         
         if (var > 0.0) {
-            /* independent lognormal clock */
+            /* independent lognormal rates */
             sigma = sqrt(log(var + 1.0));
             mu = - sigma * sigma / 2.0;
-            for (l = 0; l < len; l++)
-                p->rates[l] = rndLogNormal(mu, sigma);
+            
+            m = len / npart; // number of chars per partition
+            for (n = 0; n < npart; n++) {
+                /* same (linked) rate within each partition */
+                rate = rndLogNormal(mu, sigma);
+                if (n < npart - 1) {
+                    for (l = n*m; l < (n+1)*m; l++)
+                        p->rates[l] = rate;
+                } else {
+                    for (l = n*m; l < len; l++)
+                        p->rates[l] = rate;
+                }
+            }
         }
         else {
             /* strict clock */
