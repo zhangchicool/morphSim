@@ -2,8 +2,6 @@
 
 echo "G4v(a=1) -vs- F2v(a~exp(1))" > run.log
 
-echo "reso  sja  d_qt  d_ci  d_rf" > dist_t.txt
-
 for i in {1..100}
 do
   echo "** tree $i **" >> run.log
@@ -17,9 +15,6 @@ do
   # run mrbayes to infer the parameters
   ../../mb cmd.nex >> run.log
   
-  # true vs estimated trees
-  Rscript sum_t.r >> run.log
-
   # rename files to avoid overwriting
   mv data.nex        data_$i.nex
   mv data.nex.con.tre sim_$i.con.tre

@@ -3,8 +3,7 @@ Begin MrBayes;
 
   lset coding=variable;
 
-  mcmc nchain=1 ngen=6000000 samplefr=200 printfr=100000 diagnfr=500000;
-
-  sumt burninfrac=0.35;
-  sump burninfrac=0.35;
+  mcmc nchain=1 ngen=10000000 samplefr=200 printfr=500000 diagnfr=2000000;
+  sumt;
+  sump;
 End;
