@@ -10,9 +10,10 @@ setwd(system("pwd", intern=T))
 # estm_2 <- read.tree(text="(A, E, (D, (C, B)));")
 # estm_3 <- read.tree(text="(A, B, C, (D, E));")
 
+args = commandArgs(trailingOnly=TRUE)
 # read in the two trees for comparison
 true_t <- read.tree(file="bd.tre")
-estm_t <- read.nexus(file="data.nex.con.tre")
+estm_t <- read.nexus(file=args[1])
 
 # resolution
 if (is.rooted(estm_t)) {

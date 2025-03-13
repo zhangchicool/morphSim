@@ -11,9 +11,7 @@ do
     for i in {1..100}
     do
     	sed -n "$i"p  ../../simulator/bd.trees > bd.tre
-    	mv sim_$i.con.tre data.nex.con.tre
-    	Rscript sum_t.r >> ../../out.log 2>&1
-    	mv data.nex.con.tre sim_$i.con.tre
+    	Rscript sum_t.r sim_$i.con.tre >> ../../out.log 2>&1
     done
 
     # tree lengths
@@ -35,9 +33,7 @@ do
     for i in {1..100}
     do
     	sed -n "$i"p  ../../simulator/bd.trees > bd.tre
-    	mv sim_$i.con.tre data.nex.con.tre
-    	Rscript sum_t.r >> ../../out.log 2>&1
-    	mv data.nex.con.tre sim_$i.con.tre
+    	Rscript sum_t.r sim_$i.con.tre >> ../../out.log 2>&1
     done
 
     # tree heights and clock rates
