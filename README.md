@@ -22,11 +22,10 @@ Contents:
 
 0. supplementary.figures.pdf
 
-1. scripts -- 
+1. scripts
 
-2. simulator -- 
+2. simulator
 
-3. nonclock(-mis) --
+3. nonclock(-mis) -- folder names refer figure legends
 
-4. tipdating(-mis) --
-
+4. tipdating(-mis) -- folder names refer figure legends
