@@ -26,6 +26,8 @@ Contents:
 
 3. simulator
 
-4. nonclock(-mis) -- folder names refer figure legends
+4. nonclock(-mis) -- subfolder names refer figure legends
 
-5. tipdating(-mis) -- folder names refer figure legends
+5. tipdating(-mis) -- subfolder names refer figure legends
+
+6. test -- test run for one instance
