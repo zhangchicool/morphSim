@@ -20,11 +20,11 @@ The tree distance metrics are summarized using "sum_t.r".
 ---
 Contents:
 
-1. figures -- supplementary figures S1-S4
+1. figures -- supplementary figures S1-S5
 
-2. scripts
+2. scripts -- master script and plotting functions
 
-3. simulator
+3. simulator -- source code and usage
 
 4. nonclock(-mis) -- subfolder names refer figure legends
 
