@@ -62,8 +62,8 @@ int main (int argc, char *argv[]) {
     }
     // TODO: check the inputs are reasonable
 
-    printf("seed: %u\n", z_rndu);
-    // setSeed(-1);
+    // printf("seed: %u\n", z_rndu);
+    setSeed(123456789);
 
     while ((c = fgetc(input)) != EOF) {
         if (isspace(c))  continue;
